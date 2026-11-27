@@ -320,6 +320,19 @@ html[data-theme=dark] .qn{background:#d6d4cc;color:#262624}
 .ro.ok .lt{background:var(--ok);border-color:var(--ok);color:#fff}.ro.no .lt{background:var(--bad);border-color:var(--bad);color:#fff}
 @media (max-width:760px){.hero{grid-template-columns:1fr;justify-items:center;text-align:center}.rq summary{grid-template-columns:2.25rem 1fr auto}.ra{display:none}.rq summary::after{display:none}}
 .rs article{background:var(--soft)}.rs article.cd,.cd h2{background:var(--tint)}
+
+#hov i{position:fixed;background:rgba(95,99,104,.24);border-radius:3px;pointer-events:none;z-index:8}
+.vtoast{position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:.55rem 1.1rem;border-radius:62rem;z-index:30;font-size:.9375rem;animation:fd .15s ease}
+.fc{perspective:1200px;max-width:36rem;margin:1.25rem auto}.fci{position:relative;height:21rem;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}.fci.fl{transform:rotateY(180deg)}
+.fcf,.fcb{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:1.125rem;box-shadow:0 2px 14px rgba(0,0,0,.18);background:var(--card,#fff);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.5rem;text-align:center;overflow:auto}
+.fcb{transform:rotateY(180deg)}.fcw{font-size:2.25rem;font-weight:700;line-height:1.2}.fcw.s{font-size:1.25rem;font-weight:600}.vp{margin:.4rem 0;font-size:1.0625rem}.vp.s{font-size:.9375rem;color:var(--mut)}
+.vq{padding:1.25rem 1.5rem;max-width:40rem;margin:1rem auto}.vqp{font-size:1.1875rem;margin-bottom:.75rem}.vqp .vp{padding:.6rem .9rem;background:var(--soft);border-radius:.5rem;font-family:Georgia,serif}
+.vo{display:block;width:100%;text-align:left;padding:.75rem 1rem;margin:.5rem 0;border:2px solid var(--line);border-radius:.75rem;background:var(--card,#fff);color:var(--fg);font-size:1.0625rem}.vo:hover:not(:disabled){border-color:var(--blue)}.vo.ok{border-color:var(--ok);background:var(--sel)}.vo.no{border-color:var(--bad)}
+.vfb{margin:.75rem 0;padding:.6rem .9rem;border-radius:.5rem;background:var(--soft)}
+.vm{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.65rem;margin:1.25rem 0}.vt{min-height:4.25rem;padding:.6rem;border:2px solid var(--line);border-radius:.75rem;background:var(--card,#fff);color:var(--fg);font-weight:600}.vt.on{border-color:var(--blue);background:var(--sel)}.vt.er{border-color:var(--bad)}.vt.dn{opacity:.2;pointer-events:none}
+.vr{display:flex;gap:1rem;justify-content:space-between;align-items:flex-start;padding:.85rem 1.25rem;border-bottom:1px solid var(--line)}.vr:last-child{border:0}.vw{font-size:1.1875rem}.vt2{font-weight:600}.vb{display:flex;gap:.25rem;flex-wrap:wrap;justify-content:flex-end}.vr .chip{margin-left:.5rem}
+mark.vm1{background:#ffe066;color:#111;border-radius:2px}
+@media (max-width:760px){.vr{flex-direction:column}.vb{justify-content:flex-start}}
 </style>
 </head>
 <body>
@@ -412,7 +425,7 @@ function home(){
 <div class="sg"><div class="st"><b>${X.E.length}</b><span>Questions solved</span></div><div class="st"><b>${X.E.length?Math.round(X.C/X.E.length*100)+'%':'–'}</b><span>Accuracy</span></div><div class="st"><b>${X.st}</b><span>Day streak</span></div><div class="st"><b>${hist.length}</b><span>Tests finished</span></div></div>
 <div class="hg"><div class="cd"><h2>Today’s goal</h2><p><b>${X.today}</b> of ${GOAL} questions${X.today>=GOAL?' · Goal reached 🎉':''}</p><div style="padding:0 1.5rem"><div class="tr"><i style="width:${pct}%"></i></div></div><div class="row"><span>Daily goal</span><button class="btn alt sm" data-a="gl" data-k="-5" aria-label="Lower goal">−5</button><button class="btn alt sm" data-a="gl" data-k="5" aria-label="Raise goal">+5</button></div></div>
 <div class="cd"><h2>Question of the day</h2>${Q?`<p><b>${esc(Q.k)}</b><br><small class="hint">${TS[Q.s]} · ${esc(Q.d)} · ${DFN[Q.f]}${sq?' · '+(sq.r?'solved ✓':'tried ✗'):''}</small></p><div class="row"><button class="btn sm" data-a="hq" data-q="qod">${sq?'Try again':'Solve it'}</button></div>`:'<p>Question data not found. Keep the <b>data</b> folder next to index.html.</p>'}</div></div>
-<h2>Quick practice</h2><div class="sg">${QS.map(([q,t,d])=>`<button class="qs" data-a="hq" data-q="${q}"${qpool(q).length?'':' disabled'}><b>${t}</b><span>${d}</span></button>`).join('')}</div>
+${vocHome()}<h2>Quick practice</h2><div class="sg">${QS.map(([q,t,d])=>`<button class="qs" data-a="hq" data-q="${q}"${qpool(q).length?'':' disabled'}><b>${t}</b><span>${d}</span></button>`).join('')}</div>
 <div class="hg"><div class="cd"><h2>Skills to work on</h2>${wk?`<div style="padding:0 1.5rem 1.125rem">${X.skl.filter(k=>k[1][0]<k[1][1]).slice(0,4).map(([t,[r,m]])=>`<div class="br wk"><span title="${esc(t)}">${esc(t)}</span><div class="tr"><i style="width:${r/m*100}%"></i></div><b>${r}/${m}</b></div>`).join('')}</div>`:`<p>${X.E.length?'No weak spots so far. Nice work.':'Solve a few questions and your weak spots will show up here.'}</p>`}<div class="row"><button class="btn alt sm" data-a="an">Open Analyze</button></div></div>
 <div class="cd"><h2>Recent activity</h2>${rec.length?`<div style="padding:0 1.5rem 1.125rem">${rec.map(x=>`<p style="padding:0;margin:.4rem 0"><span class="${x.s.r?'good':'warn'}"><b>${x.s.r?'✓':'✗'}</b></span> ${esc(x.it.k)} <small class="hint">· ${TS[x.it.s]} · ${new Date(x.s.d).toLocaleDateString()}</small></p>`).join('')}</div>`:'<p>Nothing yet. Start with a quick practice above.</p>'}${lt?`<p><small class="hint">Last test: ${esc(lt.n)} · ${lt.s}/${lt.N} (${lt.p}%)</small></p>`:''}</div></div></main>`}
 function mtV(){
@@ -520,7 +533,7 @@ function showHM(i){hp=i;hm.dataset.o='';
 hm.innerHTML='<div class="hr">'+HC.map((c,j)=>`<button class="sw2" data-c="${j}" style="background:${c}" aria-label="Highlight color ${j+1}"></button>`).join('')+'<button class="sw2" data-c="-1" aria-label="Remove highlight">⌫</button><span class="sp"></span><button data-m="t">Translate</button><button data-m="d">Define</button></div><div id="hout" hidden></div>';
 hm.hidden=false;placeHM()}
 function placeHM(){const w=hm.offsetWidth,h=hm.offsetHeight,r=hp.r;let x=Math.max(6,Math.min(r.left+r.width/2-w/2,innerWidth-w-6)),y=r.bottom+10;if(y+h>innerHeight-6)y=Math.max(6,r.top-h-10);hm.style.left=x+'px';hm.style.top=y+'px'}
-function chk(){const i=selInfo();if(i){if(hm.hidden||!hp||i.a!==hp.a||i.b!==hp.b||i.k!==hp.k)showHM(i)}else if(hm.dataset.o!=='1')hideHM()}
+function chk(){if(hp&&hp.w&&!hm.hidden&&getSelection().isCollapsed)return;const i=selInfo();if(i){if(hm.hidden||!hp||i.a!==hp.a||i.b!==hp.b||i.k!==hp.k)showHM(i)}else if(hm.dataset.o!=='1')hideHM()}
 document.addEventListener('selectionchange',()=>{clearTimeout(ht);ht=setTimeout(()=>{if(!mb)chk()},350)});
 document.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')mb=1;if(!hm.contains(e.target))hideHM()});
 document.addEventListener('pointerup',()=>{if(mb){mb=0;setTimeout(chk,0)}});
@@ -535,7 +548,7 @@ async function runD(){const o=$('#hout');o.hidden=false;hm.dataset.o='1';const w
 try{const r=await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(w));if(!r.ok)throw 0;const j=await r.json();
 o.innerHTML='<b>'+esc(w)+'</b>'+j[0].meanings.slice(0,3).map(m=>'<div><i>'+esc(m.partOfSpeech)+'</i> — '+esc(m.definitions[0].definition)+'</div>').join('')}catch(e){o.textContent='No definition found for “'+w+'”.'}placeHM()}
 hm.addEventListener('click',e=>{const b=e.target.closest('button,select');if(!b||!hp)return;
-if(b.dataset.c!==undefined){(S.hl[hp.k]=S.hl[hp.k]||[]).push([hp.a,hp.b,+b.dataset.c]);applyHL();getSelection().removeAllRanges();hideHM()}
+if(b.dataset.c!==undefined){(S.hl[hp.k]=S.hl[hp.k]||[]).push([hp.a,hp.b,+b.dataset.c]);applyHL();hlSaved(hp,+b.dataset.c);getSelection().removeAllRanges();hideHM()}
 else if(b.dataset.m==='t'){const o=$('#hout');o.hidden=false;hm.dataset.o='1';o.innerHTML='<select id="hlg">'+LGS.map(([c,n])=>`<option value="${c}"${c===LG()?' selected':''}>${n}</option>`).join('')+'</select><div id="ho2"></div>';runT()}
 else if(b.dataset.m==='d')runD()});
 hm.addEventListener('change',e=>{if(e.target.id==='hlg'){SV('bb_lang',e.target.value);runT()}});
@@ -666,8 +679,8 @@ function LB0(){return{test:[],dom:[],sk:[],df:[],res:[],q:'',rm:0,o:'',pg:0,list
 const inn=(a,v)=>!a.length||a.includes(v);
 function filt(){const q=LB.q.trim().toLowerCase();return ALLQ().filter(x=>inn(LB.test,x.s)&&inn(LB.dom,x.d)&&inn(LB.sk,x.k)&&inn(LB.df,x.f)&&(!LB.rm||!x.v)&&(!q||x.id.toLowerCase().includes(q))&&(!LB.res.length||LB.res.some(r=>{const o=SOL[x.id];return r==='u'?!o:r==='c'?o&&o.r:o&&!o.r})))}
 const msel=(f,lab,opts)=>{const cur=LB[f],o=LB.o===f;return`<div class="fl ms">${lab}<button class="msb" data-a="mso" data-m="${f}" aria-expanded="${o}">${cur.length?cur.length+' selected':'All'} ▾</button>${o?`<div class="msp">${opts.map(([v,t])=>`<label class="mi2"><input type="checkbox" data-f="${f}" data-v="${esc(v)}"${cur.includes(v)?' checked':''}> ${esc(t)}</label>`).join('')}</div>`:''}</div>`};
-const NAVI=[['home','Home'],['lib','Library'],['mt','My Tests'],['an','Analyze']],TOPV={home:1,mt:1,lib:1,sol:1,an:1,bld:1};
-const topbar=()=>{const cur=({home:'home',lib:'lib',bld:'lib',mt:'mt',sol:'an',an:'an',r:'mt'})[S.v];return `<div class="bh"><div class="bl"><span class="lg2">✦ Greenbook</span></div><nav class="bnv" aria-label="Main">${NAVI.map(([a,t])=>`<button data-a="${a}"${a===cur?' class="on" aria-current="page"':''}>${t}</button>`).join('')}</nav><div class="br2"><button class="gear" data-a="set" aria-label="Settings" aria-expanded="${!!SETO}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>${SETO?`<div class="stm" role="dialog" aria-label="Settings"><h3>Settings</h3><div class="srow"><span>Interface size</span><span class="zr"><button data-a="zm" aria-label="Smaller">A−</button><b>${Math.round(UZ*100)}%</b><button data-a="zp" aria-label="Larger">A+</button></span></div><button class="lk" data-a="zr">Reset size</button><div class="srow" style="margin-top:.75rem"><span>Theme</span><span class="seg"><button data-a="th" data-k="0"${TH.d?'':' class="on"'}>Light</button><button data-a="th" data-k="1"${TH.d?' class="on"':''}>Dark</button></span></div><div>Accent color</div><div class="sws">${ACC.map(([n,c])=>`<button class="swc${TH.c===c?' on':''}" data-a="ac" data-c="${c}" style="background:${c}" title="${n}" aria-label="${n}"></button>`).join('')}</div></div>`:''}</div></div>`};
+const NAVI=[['home','Home'],['lib','Library'],['voc','Vocab'],['mt','My Tests'],['an','Analyze']],TOPV={home:1,mt:1,lib:1,sol:1,an:1,bld:1,voc:1};
+const topbar=()=>{const cur=({home:'home',lib:'lib',bld:'lib',mt:'mt',sol:'an',an:'an',voc:'voc',r:'mt'})[S.v];return `<div class="bh"><div class="bl"><span class="lg2">✦ Greenbook</span></div><nav class="bnv" aria-label="Main">${NAVI.map(([a,t])=>`<button data-a="${a}"${a===cur?' class="on" aria-current="page"':''}>${t}</button>`).join('')}</nav><div class="br2"><button class="gear" data-a="set" aria-label="Settings" aria-expanded="${!!SETO}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>${SETO?`<div class="stm" role="dialog" aria-label="Settings"><h3>Settings</h3><div class="srow"><span>Interface size</span><span class="zr"><button data-a="zm" aria-label="Smaller">A−</button><b>${Math.round(UZ*100)}%</b><button data-a="zp" aria-label="Larger">A+</button></span></div><button class="lk" data-a="zr">Reset size</button><div class="srow" style="margin-top:.75rem"><span>Theme</span><span class="seg"><button data-a="th" data-k="0"${TH.d?'':' class="on"'}>Light</button><button data-a="th" data-k="1"${TH.d?' class="on"':''}>Dark</button></span></div><div>Accent color</div><div class="sws">${ACC.map(([n,c])=>`<button class="swc${TH.c===c?' on':''}" data-a="ac" data-c="${c}" style="background:${c}" title="${n}" aria-label="${n}"></button>`).join('')}</div></div>`:''}</div></div>`};
 function libV(){
  const A=ALLQ(),sub=A.filter(x=>!LB.test.length||LB.test.includes(x.s)),doms=uniq(sub.map(x=>x.d));LB.dom=LB.dom.filter(d=>doms.includes(d));const sks=uniq(sub.filter(x=>!LB.dom.length||LB.dom.includes(x.d)).map(x=>x.k));LB.sk=LB.sk.filter(k=>sks.includes(k));
  const L=LB.list=filt(),np=Math.max(1,Math.ceil(L.length/PG));LB.pg=Math.min(LB.pg,np-1);const pg=L.slice(LB.pg*PG,LB.pg*PG+PG);
@@ -678,7 +691,7 @@ function libV(){
 <div class="cd lst">${pg.map((x,i)=>{const s=SOL[x.id];return`<button class="lr" data-a="gq" data-k="${LB.pg*PG+i}"><span class="id">${esc(x.id)}</span><span class="sk"><b>${esc(x.k)}</b><small>${TS[x.s]} · ${esc(x.d)}</small></span><span>${bars(x.f)}</span><span class="chip${x.v?'':' off'}">${x.v?'Active':'Non-active'}</span><span class="rz ${s?s.r?'good':'warn':''}">${s?s.r?'✓':'✗':''}</span></button>`}).join('')||'<p style="padding:1rem">No questions match these filters.</p>'}</div>
 <div class="row" style="justify-content:center"><button class="btn alt sm" data-a="lpg" data-k="-1"${LB.pg?'':' disabled'}>Previous</button><span>Page ${LB.pg+1} of ${np}</span><button class="btn alt sm" data-a="lpg" data-k="1"${LB.pg<np-1?'':' disabled'}>Next</button></div></main>`}
 function openQ(list,i){P={list,i:0,t:0,h:0};goQ(i,1)}
-function goQ(i,first){const it=P.list[i];P.i=i;P.d=null;P.sel=-1;P.done=0;P.qt=0;P.err='';P.ok=undefined;P.self=0;S={v:'lq',T:{math:it.s==='m'?1:0,name:'Library'},hl:{},i:0,x:[[0,0,0,0]],e:0};
+function goQ(i,first){const it=P.list[i];P.i=i;P.d=null;P.sel=-1;P.done=0;P.qt=0;P.err='';P.ok=undefined;P.self=0;S={v:'lq',T:{math:it.s==='m'?1:0,name:'Library'},hl:HLG(it.id),i:0,x:[[0,0,0,0]],e:0};
  if(first){clearInterval(PT);PT=setInterval(()=>{if(!P)return;P.t++;P.qt++;const e=$('#tm');if(e&&!P.h)e.textContent=fmt(P.t)},1000)}
  render();getQ(it).then(d=>{if(P&&P.i===i){P.d=d;render()}}).catch(e=>{if(P&&P.i===i){P.err=e.message;render()}});
  const nx=P.list[i+1];if(nx&&!nx.u&&HAVE)getQ(nx).catch(()=>{})}
@@ -736,7 +749,7 @@ function fullTest(){const eng=x=>x.s==='m'?{t:x.k,p:x.data.p,..._(x),e:x.data.e,
  custom.push({name:BG.name.trim()||'My full-length test',mins:mods.reduce((a,m)=>a+m.mins,0),q:mods.flatMap(m=>m.q),mods,full:1,math:0});SV('bb_tests',custom);msg='Full-length test added.'}
 const _r0=render;
 render=function(){trk();if(S.v!=='lq'){clearInterval(PT);P=null}
- if(S.v==='mt')mtV();else if(S.v==='an')anV();else if(S.v==='lib')libV();else if(S.v==='lq'&&P){lqV();applyHL()}else if(S.v==='sol')solV();else if(S.v==='bld')bldV();else _r0()};
+ if(S.v==='mt')mtV();else if(S.v==='an')anV();else if(S.v==='lib')libV();else if(S.v==='lq'&&P){lqV();applyHL()}else if(S.v==='voc')vocV();else if(S.v==='sol')solV();else if(S.v==='bld')bldV();else _r0()};
 document.addEventListener('change',e=>{const t=e.target,f=t.dataset&&t.dataset.f;if(!f)return;if(f==='rm')LB.rm=t.checked?1:0;else if(t.type==='checkbox'){const a=LB[f],v=t.dataset.v,i=a.indexOf(v);i<0?a.push(v):a.splice(i,1)}else LB[f]=t.value;LB.pg=0;render()});
 document.addEventListener('input',e=>{const t=e.target;if(t.id==='gsp'&&P)P.sel=t.value;else if(t.id==='gjs')BG.j=t.value;else if(t.id==='gtn')BG.name=t.value});
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t||t.disabled)return;const a=t.dataset.a,k=+t.dataset.k;let go=1;
@@ -827,6 +840,137 @@ function recSol(){let ch=0;S.q.forEach((x,k)=>{if(!x.lib||S.a[k]===-1||S.a[k]===
 const qtx=x=>x.lib?(x._m?(x.qi?img(x.qi,x.qw):`<p class="ps">${esc(x.p)}</p>`):`<div class="ps">${para(x.p).replace(/___+/,'<span class="blank"></span>')}</div>`):`<p class="ps">${(x._m||S.T.math)?esc(x.p):blank(x.p)}</p>`;
 const ch=(x,j)=>x.c&&x.c[j]!==undefined?L[j]+". "+(x.cw?img(x.c[j],x.cw[j]):esc(x.c[j])):'–';
 const rat=x=>x.lib?(x.ri?img(x.ri,x.rw):para(x.e)):`<p>${esc(x.e||"")}</p>`;
+
+/* ===== Hover-to-highlight (Library only) ===== */
+(function(){
+const hov=document.createElement('div');hov.id='hov';document.body.appendChild(hov);
+function wordAt(x,y){let n,o;if(document.caretPositionFromPoint){const p=document.caretPositionFromPoint(x,y);if(!p)return;n=p.offsetNode;o=p.offset}else if(document.caretRangeFromPoint){const r=document.caretRangeFromPoint(x,y);if(!r)return;n=r.startContainer;o=r.startOffset}else return;
+ if(!n||n.nodeType!==3)return;const el=n.parentElement&&n.parentElement.closest('[data-hl]');if(!el)return;
+ const t=n.textContent,W=/[\p{L}\p{N}'’-]/u;let a=o,b=o;while(a>0&&W.test(t[a-1]))a--;while(b<t.length&&W.test(t[b]))b++;
+ while(a<b&&/['’-]/.test(t[a]))a++;while(b>a&&/['’-]/.test(t[b-1]))b--;if(a>=b)return;
+ const r=document.createRange();r.setStart(n,a);r.setEnd(n,b);const rs=[...r.getClientRects()];
+ if(!rs.some(q=>x>=q.left-1&&x<=q.right+1&&y>=q.top-1&&y<=q.bottom+1))return;
+ return{k:S.i+el.dataset.hl,a:offs(el,n,a),b:offs(el,n,b),t:t.slice(a,b),rs,r:r.getBoundingClientRect(),w:1}}
+const clr=()=>{hov.innerHTML='';document.body.style.cursor=''};
+document.addEventListener('mousemove',e=>{if(S.v!=='lq'||mb||e.buttons||!hm.hidden){clr();return}
+ const w=wordAt(e.clientX,e.clientY);if(!w){clr();return}
+ document.body.style.cursor='pointer';hov.innerHTML=w.rs.map(q=>`<i style="left:${q.left}px;top:${q.top}px;width:${q.width}px;height:${q.height}px"></i>`).join('')});
+document.addEventListener('mouseleave',clr);addEventListener('scroll',clr,true);
+document.addEventListener('click',e=>{if(S.v!=='lq'||hm.contains(e.target)||e.target.closest('button,a,input,select'))return;
+ const s=getSelection();if(s&&!s.isCollapsed)return;const w=wordAt(e.clientX,e.clientY);if(!w)return;
+ clr();hp={k:w.k,a:w.a,b:w.b,t:w.t,r:w.r,w:1};showHM(hp)});
+})();
+
+/* ===== Saved highlights + Vocab ===== */
+(function(){
+const QHL=ST('gb_qhl')||{},VDAY=ST('gb_vday')||{};let VOC=ST('gb_voc')||[];
+const VB=[0,0,1,3,7,14],ENR=new Set(),SN={n:'New',g:'Learning',l:'Learned'};
+let VS={tab:'p',sc:'a',n:'20',q:'',fs:'a',so:'n',m:null,dir:'w',err:''};
+const sv=()=>SV('gb_voc',VOC),dk=()=>{const x=new Date();return x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate()},
+ due=v=>!v.rv||v.nx<=Date.now(),sta=v=>!v.rv?'n':v.box>=4?'l':'g',gw=id=>VOC.find(v=>v.id===id),
+ rx=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),
+ hi=v=>esc(v.c).replace(new RegExp(rx(esc(v.w)),'i'),m=>'<mark class="vm1">'+m+'</mark>'),
+ cur=()=>gw(VS.q[VS.i]);
+function toast(m){const d=document.createElement('div');d.className='vtoast';d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),1900)}
+function say(w){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(w);u.lang='en-US';speechSynthesis.speak(u)}catch(e){}}
+window.HLG=id=>QHL[id]=QHL[id]||{};
+window.hlSaved=(h,c)=>{if(S.v!=='lq'||!P||!h)return;const it=P.list[P.i];QHL[it.id]=S.hl;SV('gb_qhl',QHL);const el=hlEl(h.k.slice(-1));if(!el)return;
+ if(c<0){const n=VOC.length;VOC=VOC.filter(v=>!(v.q===it.id&&v.k===h.k&&v.a<h.b&&v.b>h.a));if(VOC.length!==n){sv();toast('Removed from Vocab')}return}
+ const tx=el.textContent,w=tx.slice(h.a,h.b).replace(/\s+/g,' ').trim();if(!w)return;
+ if(VOC.some(v=>v.w.toLowerCase()===w.toLowerCase())){if(!VOC.some(v=>v.q===it.id&&v.a===h.a&&v.b===h.b))toast('Already in Vocab');return}
+ const bf=tx.slice(0,h.a),k=Math.max(bf.lastIndexOf('. '),bf.lastIndexOf('? '),bf.lastIndexOf('! ')),s0=k<0?0:k+2,e0=tx.slice(h.b).search(/[.!?](\s|$)/),
+  c2=tx.slice(s0,e0<0?tx.length:h.b+e0+1).replace(/\s+/g,' ').trim().slice(0,320);
+ const v={id:'v'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),w,q:it.id,k:h.k,a:h.a,b:h.b,c:c2,add:Date.now(),box:0,rv:0,ok:0,bad:0,nx:0};
+ VOC.push(v);sv();toast('Saved to Vocab: '+w);enr(v)};
+async function enr(v){if(ENR.has(v.id))return;const w=v.w,one=!/\s/.test(w);if(v.t&&(v.d||!one))return;ENR.add(v.id);let ch=0;
+ if(!v.t){try{v.t=await trans(w,LG());v.l=LG();ch=1}catch(e){}}
+ if(one&&!v.d){try{const r=await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(w.toLowerCase()));if(r.ok){const m=(await r.json())[0].meanings[0];v.pos=m.partOfSpeech;v.d=m.definitions[0].definition;ch=1}}catch(e){}}
+ if(v.t&&(v.d||!one))ENR.add(v.id);else ENR.delete(v.id);
+ if(ch){sv();if(S.v==='voc'&&!VS.m&&!/INPUT|SELECT/.test(document.activeElement.tagName))render()}}
+function grade(v,ok){v.rv=(v.rv||0)+1;if(ok){v.ok=(v.ok||0)+1;v.box=Math.min(5,(v.box||0)+(v.box?1:2));VS.ok++}else{v.bad=(v.bad||0)+1;v.box=Math.max(1,(v.box||1)-2);VS.bad++;VS.miss.push(v.id)}
+ v.nx=Date.now()+VB[v.box]*864e5;VDAY[dk()]=(VDAY[dk()]||0)+1;SV('gb_vday',VDAY);sv()}
+function stats(){const T=VOC.length,n=VOC.filter(v=>!v.rv).length,l=VOC.filter(v=>sta(v)==='l').length;let st=0;const c=new Date();if(!VDAY[dk()])c.setDate(c.getDate()-1);
+ while(VDAY[c.getFullYear()+'-'+(c.getMonth()+1)+'-'+c.getDate()]){st++;c.setDate(c.getDate()-1)}
+ const ok=VOC.reduce((a,v)=>a+(v.ok||0),0),tot=VOC.reduce((a,v)=>a+(v.ok||0)+(v.bad||0),0);
+ return{T,n,g:T-n-l,l,d:VOC.filter(due).length,td:VDAY[dk()]||0,st,acc:tot?Math.round(ok/tot*100):null,bx:[n,1,2,3,4,5].map((b,i)=>i?VOC.filter(v=>v.rv&&v.box===i).length:n)}}
+const st4=(a)=>`<div class="sg">${a.map(([b,s])=>`<div class="st"><b>${b}</b><span>${s}</span></div>`).join('')}</div>`;
+window.vocHome=()=>{const s=stats();return`<h2>Vocabulary</h2><div class="cd">${st4([[s.T,'Saved words'],[s.l,'Learned'],[s.d,'Due now'],[s.td,'Studied today']])}${s.T?`<div class="row"><button class="btn sm" data-a="vxgo" data-m="fc" data-s="due"${s.d?'':' disabled'}>Review due words</button><button class="btn alt sm" data-a="vxgo" data-m="fc" data-s="a" data-n="50">Random 50 flashcards</button><button class="btn alt sm" data-a="voc">Open Vocab</button></div>`:'<p>Click any word while solving a Library question and highlight it. It is saved here automatically.</p><div class="row"><button class="btn alt sm" data-a="voc">Open Vocab</button></div>'}</div>`};
+function pool(sc,n){let a=VOC.slice();if(sc==='due')a=a.filter(due);else if(sc==='n')a=a.filter(v=>!v.rv);else if(sc==='g')a=a.filter(v=>sta(v)==='g');
+ if(sc==='h')a=a.filter(v=>v.bad).sort((x,y)=>(y.bad-(y.ok||0))-(x.bad-(x.ok||0)));else a=shf(a);return n==='all'?a:a.slice(0,+n)}
+function start(m,sc,n,ids){let p=ids?ids.map(gw).filter(Boolean):pool(sc,n);if(m==='qz'||m==='mt')p=p.filter(v=>v.t||v.d);
+ if(p.length<(m==='mt'?2:1)||((m==='qz'||m==='mt')&&VOC.length<4)){VS.err=(m==='qz'||m==='mt')&&VOC.length<4?'Save at least 4 words for this mode.':p.length?'Not enough words.':'No words match this selection (translations may still be loading).';return}
+ Object.assign(VS,{err:'',m,lm:m,lsc:sc,ln:n,q:p.map(v=>v.id),i:0,fl:0,ok:0,bad:0,miss:[],an:null,qs:{},rq:{},hint:0,tv:'',er:null});if(m==='mt')mround()}
+function mround(){const ws=VS.q.slice(VS.i,VS.i+6).map(gw),sh=v=>v.t||(v.d.length>80?v.d.slice(0,78)+'…':v.d);
+ VS.tl=shf(ws.map(v=>({id:v.id,s:'w',x:v.w})).concat(ws.map(v=>({id:v.id,s:'m',x:sh(v)}))));VS.sel=[];VS.dn=[];VS.mis={};VS.nr=ws.length}
+function nxt(){VS.i++;VS.fl=0;VS.an=null;VS.hint=0;VS.tv='';if(VS.i>=VS.q.length)VS.m='sum'}
+function know(k){const v=cur();if(!v)return;grade(v,!!k);if(!k&&!VS.rq[v.id]){VS.rq[v.id]=1;VS.q.push(v.id)}nxt()}
+function chk(){const v=cur(),i=$('#vty');if(!v||!i||VS.an)return;const x=i.value.trim().toLowerCase().replace(/\s+/g,' ');VS.an={v:x,ok:x===v.w.toLowerCase()};grade(v,VS.an.ok)}
+function mkq(v){const o=VOC.filter(x=>x.id!==v.id),ty=[];if(v.d)ty.push('d');if(v.t)ty.push('t');if(v.c&&new RegExp(rx(v.w),'i').test(v.c))ty.push('c');
+ const T=ty[Math.floor(Math.random()*ty.length)],f=T==='t'?'t':'w',ops=shf([v[f]].concat(shf(o.filter(x=>x[f]&&x[f]!==v[f])).slice(0,3).map(x=>x[f])));
+ const p=T==='d'?'Which word matches this definition?<div class="vp">'+esc(v.d)+'</div>':T==='t'?'What is the meaning of <b>'+esc(v.w)+'</b>?':'Which word best completes the sentence?<div class="vp">'+esc(v.c.replace(new RegExp(rx(v.w),'i'),'_____'))+'</div>';
+ return{p,ops,a:ops.indexOf(v[f])}}
+const tabs=()=>`<div class="row" style="padding:0"><button class="btn sm${VS.tab==='p'?'':' alt'}" data-a="vxtab" data-k="0">Practice</button><button class="btn sm${VS.tab==='l'?'':' alt'}" data-a="vxtab" data-k="1">Word list (${VOC.length})</button></div>`;
+const sel=(f,o)=>`<select data-vf="${f}">${o.map(([k,t])=>`<option value="${k}"${VS[f]===k?' selected':''}>${t}</option>`).join('')}</select>`;
+function hub(){const s=stats(),T=s.T,cnt=pool(VS.sc,VS.n).length,LBL=['New','Box 1 · again','Box 2 · 1 day','Box 3 · 3 days','Box 4 · 1 week','Box 5 · 2 weeks'],
+ M=[['fc','Flashcards','Flip cards, rate yourself',1],['qz','Quiz','Definitions, meanings, sentence blanks',4],['ty','Type it','Spell the word from its meaning',1],['mt','Match','Pair words with their meanings',4]];
+ if(!T)return`<h1>Vocab</h1>${tabs()}<div class="cd vq"><h2>No words yet</h2><p>While solving a question in the Library, hover over any word and click it (or select text), then pick a highlight color. The word is saved here with its translation, definition and the sentence it came from.</p></div>`;
+ return`<h1>Vocab</h1>${tabs()}${st4([[T,'Saved words'],[s.n,'New'],[s.g,'Learning'],[s.l,'Learned'],[s.d,'Due now'],[s.st+' 🔥','Day streak · '+s.td+' today']])}
+<div class="cd" style="padding:1rem 1.5rem;margin:1rem 0"><b>Mastery: ${Math.round(s.l/T*100)}% learned</b>${s.acc!=null?` · ${s.acc}% answers correct`:''}<div class="tr" style="margin:.5rem 0 .9rem"><i style="width:${Math.round(s.l/T*100)}%"></i></div>${s.bx.map((c,b)=>`<div class="br wk"><span>${LBL[b]}</span><div class="tr"><i style="width:${c/T*100}%"></i></div><b>${c}</b></div>`).join('')}<small class="hint">Words move up a box each time you get them right and drop back when you miss. Box 4+ counts as learned.</small></div>
+<h2>Study</h2><div class="row" style="padding:0"><span>Words:</span>${sel('sc',[['a','All'],['due','Due now'],['n','New'],['g','Learning'],['h','Hardest']])}<span>Count:</span>${sel('n',[['10','10'],['20','20'],['50','50'],['all','All']])}<span class="hint">${cnt} selected</span></div>${VS.err?`<p class="er2">${esc(VS.err)}</p>`:''}
+<div class="sg">${M.map(([m,t,d,min])=>`<button class="qs" data-a="vxgo" data-m="${m}"${T>=min&&cnt?'':' disabled'}><b>${t}</b><span>${d}</span></button>`).join('')}</div>
+<div class="row" style="padding:0"><button class="btn sm" data-a="vxgo" data-m="fc" data-s="due"${s.d?'':' disabled'}>Review due words (${s.d})</button><button class="btn alt sm" data-a="vxgo" data-m="fc" data-s="a" data-n="50">Random 50 flashcards</button></div>`}
+function fcV(){const v=cur(),f=VS.dir==='w',mean=v.t||v.d||'';
+ const fr=f?`<div class="fcw">${esc(v.w)}</div>${v.pos?`<i>${esc(v.pos)}</i>`:''}<button class="lk" data-a="vxsay" data-id="${v.id}">🔊 Listen</button>`:`<div class="fcw s">${esc(mean||'(no meaning yet)')}</div>`;
+ const bk=(f?`<div class="fcw">${esc(v.t||'—')}</div>`:`<div class="fcw">${esc(v.w)}</div>`)+(v.d?`<div class="vp s"><b>Definition:</b> ${esc(v.d)}</div>`:'')+(v.c?`<div class="vp s">“${hi(v)}”</div>`:'');
+ return`<div class="fc"><div class="fci${VS.fl?' fl':''}" data-a="vxflip"><div class="fcf">${fr}<small class="hint">Click or press Space to flip</small></div><div class="fcb">${bk}</div></div></div><div class="row" style="justify-content:center"><button class="btn alt" data-a="vxknow" data-k="0">Still learning (1)</button><button class="btn" data-a="vxknow" data-k="1">I know it (2)</button></div>`}
+function qzV(){const v=cur(),q=VS.qs[VS.i]=VS.qs[VS.i]||mkq(v),an=VS.an;
+ return`<div class="cd vq"><div class="vqp">${q.p}</div>${q.ops.map((x,j)=>`<button class="vo${an!=null?(j===q.a?' ok':j===an?' no':''):''}" data-a="vxopt" data-k="${j}"${an!=null?' disabled':''}>${esc(x)}</button>`).join('')}${an!=null?`<div class="vfb"><b>${esc(v.w)}</b> — ${esc(v.t||'')} ${v.d?'· '+esc(v.d):''}</div><div class="row" style="padding:0"><button class="btn" data-a="vxnext">Next (Enter)</button></div>`:''}</div>`}
+function tyV(){const v=cur(),an=VS.an,h=VS.hint?v.w.slice(0,1)+' '+'_ '.repeat(Math.max(0,v.w.length-1)):'';
+ return`<div class="cd vq"><div class="vqp">Type the word that matches:${v.t?`<div class="vp">${esc(v.t)}</div>`:''}${v.d?`<div class="vp s">${esc(v.d.replace(new RegExp(rx(v.w),'ig'),'____'))}</div>`:''}${h?`<div class="hint">Hint: ${esc(h)}</div>`:''}</div><input id="vty" class="gi" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Your answer"${an?' disabled value="'+esc(an.v)+'"':''}>${an?`<div class="vfb ${an.ok?'good':'warn'}">${an.ok?'Correct ✓':'Incorrect ✗ · answer: <b>'+esc(v.w)+'</b>'}</div><div class="row" style="padding:0"><button class="btn" data-a="vxnext">Next (Enter)</button></div>`:`<div class="row" style="padding:0;margin-top:.75rem"><button class="btn" data-a="vxchk">Check</button><button class="btn alt" data-a="vxhint">Hint</button><button class="btn alt" data-a="vxskip">Don’t know</button></div>`}</div>`}
+const mtV=()=>`<div class="vm">${VS.tl.map((t,i)=>`<button class="vt${VS.dn.includes(t.id)?' dn':''}${VS.sel.includes(i)?' on':''}${VS.er&&VS.er.includes(i)?' er':''}" data-a="vxt" data-k="${i}">${esc(t.x)}</button>`).join('')}</div>`;
+function sumV(){const n=VS.ok+VS.bad,ms=[...new Set(VS.miss)].map(gw).filter(Boolean);
+ return`<div class="cd vq"><h2>Session complete 🎉</h2>${st4([[VS.ok,'Correct'],[VS.bad,'Missed'],[(n?Math.round(VS.ok/n*100):0)+'%','Accuracy']])}${ms.length?`<h2>Words to review</h2>${ms.map(v=>`<p><b>${esc(v.w)}</b> — ${esc(v.t||v.d||'')}</p>`).join('')}`:''}<div class="row">${ms.length?'<button class="btn" data-a="vxretry">Retry missed</button>':''}<button class="btn alt" data-a="vxagain">Practice again</button><button class="btn alt" data-a="vxhome">Back to Vocab</button></div></div>`}
+function study(){const m=VS.m,n=VS.q.length;
+ return`<div class="row" style="padding:0"><button class="btn alt sm" data-a="vxhome">← Vocab</button>${m!=='sum'?`<b>${m==='mt'?Math.min(VS.i+6,n):Math.min(VS.i+1,n)} / ${n}</b>`:''}${m==='fc'?`<button class="lk" data-a="vxdir">Front: ${VS.dir==='w'?'Word':'Meaning'} ⇄</button>`:''}</div>${m!=='sum'?`<div class="tr"><i style="width:${Math.round(VS.i/n*100)}%"></i></div>`:''}`+(m==='fc'?fcV():m==='qz'?qzV():m==='ty'?tyV():m==='mt'?mtV():sumV())}
+function rows(){const q=VS.q.trim().toLowerCase();const a=VOC.filter(v=>(VS.fs==='a'||(VS.fs==='d'?due(v):sta(v)===VS.fs))&&(!q||(v.w+' '+(v.t||'')+' '+(v.d||'')).toLowerCase().includes(q)));
+ a.sort(VS.so==='a'?(x,y)=>x.w.localeCompare(y.w):VS.so==='h'?(x,y)=>((y.bad||0)-(y.ok||0))-((x.bad||0)-(x.ok||0)):(x,y)=>y.add-x.add);
+ return a.length?a.map(v=>`<div class="vr"><div><b class="vw">${esc(v.w)}</b> ${v.pos?`<i>${esc(v.pos)}</i>`:''}<span class="chip${sta(v)==='n'?' off':''}">${SN[sta(v)]}</span>${v.t?`<div class="vt2">${esc(v.t)}</div>`:'<div class="hint">Translation not loaded yet (needs internet)</div>'}${v.d?`<div class="hint">${esc(v.d)}</div>`:''}${v.c?`<div class="hint">“${hi(v)}”</div>`:''}</div><div class="vb"><button class="lk" data-a="vxsay" data-id="${v.id}" title="Listen">🔊</button>${v.q&&byId(v.q)?`<button class="lk" data-a="vxopen" data-id="${v.id}">Question</button>`:''}<button class="lk" data-a="vxmark" data-id="${v.id}" data-k="${sta(v)==='l'?0:1}">${sta(v)==='l'?'Reset':'Mark learned'}</button><button class="lk" data-a="vxdel" data-id="${v.id}" aria-label="Delete">✕</button></div></div>`).join(''):'<p class="hint" style="padding:1rem">No words found. Highlight words in a Library question, or add one above.</p>'}
+const listPg=()=>`<h1>Vocab</h1>${tabs()}<div class="row" style="padding:0"><input data-vf="q" class="gi" style="max-width:15rem" placeholder="Search words…" value="${esc(VS.q)}">${sel('fs',[['a','All'],['n','New'],['g','Learning'],['l','Learned'],['d','Due now']])}${sel('so',[['n','Newest'],['a','A–Z'],['h','Hardest']])}</div><div class="row" style="padding:0"><input id="vaw" class="gi" style="max-width:15rem" placeholder="Add a word or phrase"><button class="btn sm" data-a="vxadd">Add</button></div><div class="cd lst" id="vl">${rows()}</div>`;
+window.vocV=()=>{$('#app').innerHTML=topbar()+`<main class="rs wide">${VS.m?study():VS.tab==='l'?listPg():hub()}</main>`;
+ if(VS.m==='ty'&&!VS.an){const i=$('#vty');if(i){i.value=VS.tv||'';i.focus()}}};
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t||t.disabled)return;const a=t.dataset.a,k=+t.dataset.k,id=t.dataset.id;if(a!=='voc'&&a.slice(0,2)!=='vx')return;e.stopPropagation();
+ if(a==='voc'){SETO=0;VS.m=null;S={v:'voc'};VOC.forEach(enr)}
+ else if(a==='vxtab'){VS.tab=k?'l':'p'}
+ else if(a==='vxhome')VS.m=null;
+ else if(a==='vxgo'){if(S.v!=='voc'){S={v:'voc'};VS.tab='p'}start(t.dataset.m,t.dataset.s||VS.sc,t.dataset.n||VS.n)}
+ else if(a==='vxflip'){VS.fl^=1;const c=$('.fci');if(c)c.classList.toggle('fl');return}
+ else if(a==='vxsay'){const v=gw(id);if(v)say(v.w);return}
+ else if(a==='vxknow')know(k);
+ else if(a==='vxdir')VS.dir=VS.dir==='w'?'t':'w';
+ else if(a==='vxopt'){if(VS.an!=null)return;VS.an=k;grade(cur(),k===VS.qs[VS.i].a)}
+ else if(a==='vxnext')nxt();
+ else if(a==='vxchk')chk();
+ else if(a==='vxhint'){VS.tv=($('#vty')||{}).value||'';VS.hint=1}
+ else if(a==='vxskip'){VS.an={v:'',ok:false};grade(cur(),false)}
+ else if(a==='vxretry')start(VS.lm,0,0,VS.miss);
+ else if(a==='vxagain')start(VS.lm,VS.lsc,VS.ln);
+ else if(a==='vxt'){const T=VS.tl[k];if(VS.er||VS.dn.includes(T.id)||VS.sel.includes(k))return;VS.sel.push(k);
+  if(VS.sel.length===2){const[x,y]=VS.sel.map(j=>VS.tl[j]);
+   if(x.id===y.id&&x.s!==y.s){VS.dn.push(x.id);grade(gw(x.id),!VS.mis[x.id]);VS.sel=[];if(VS.dn.length===VS.nr){VS.i+=6;if(VS.i>=VS.q.length)VS.m='sum';else mround()}}
+   else{VS.mis[x.id]=VS.mis[y.id]=1;VS.er=VS.sel.slice();VS.sel=[];render();setTimeout(()=>{VS.er=null;if(S.v==='voc')render()},550);return}}}
+ else if(a==='vxdel'){if(!confirm('Delete this word?'))return;VOC=VOC.filter(v=>v.id!==id);sv()}
+ else if(a==='vxmark'){const v=gw(id);if(k){v.rv=v.rv||1;v.box=5;v.nx=Date.now()+14*864e5}else{v.rv=0;v.box=0;v.nx=0;v.ok=0;v.bad=0}sv()}
+ else if(a==='vxopen'){const v=gw(id),it=v&&byId(v.q);if(it)openQ([it],0);return}
+ else if(a==='vxadd'){const i=$('#vaw'),w=i.value.trim().replace(/\s+/g,' ');if(!w)return;if(VOC.some(v=>v.w.toLowerCase()===w.toLowerCase()))toast('Already in Vocab');else{const v={id:'v'+Date.now().toString(36),w,q:'',c:'',add:Date.now(),box:0,rv:0,ok:0,bad:0,nx:0};VOC.push(v);sv();enr(v);toast('Added: '+w)}}
+ render()},true);
+document.addEventListener('change',e=>{const f=e.target.dataset&&e.target.dataset.vf;if(!f||f==='q')return;VS[f]=e.target.value;if(S.v==='voc')render()},true);
+document.addEventListener('input',e=>{if(e.target.dataset&&e.target.dataset.vf==='q'){VS.q=e.target.value;const l=$('#vl');if(l)l.innerHTML=rows()}});
+document.addEventListener('keydown',e=>{if(S.v!=='voc'||!VS.m)return;const m=VS.m,inp=e.target.tagName==='INPUT';let go=0;
+ if(m==='fc'&&!inp){if(e.key===' '){e.preventDefault();VS.fl^=1;const c=$('.fci');if(c)c.classList.toggle('fl')}else if(e.key==='1'||e.key==='2'){know(e.key==='2');go=1}}
+ if(e.key==='Enter'){if(m==='qz'&&VS.an!=null){nxt();go=1}else if(m==='ty'){if(VS.an)nxt();else chk();go=1}}
+ if(go)render()});
+})();
+
 /* ===== Browser history routing + transitions ===== */
 let POP=0,lastK='';
 const RT=()=>TOPV[S.v]?S.v:S.v==='lq'?'lib/q':S.v==='r'?'results':'test';
