@@ -237,6 +237,16 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 .qs{background:#fff;border:2px solid var(--line);border-radius:1rem;padding:1rem 1.25rem;text-align:left;display:flex;flex-direction:column;gap:.25rem}
 .qs b{font-size:1.0625rem}.qs span{color:var(--mut);font-size:.875rem}.qs:hover:not(:disabled){border-color:var(--b2);background:var(--sel)}.qs:disabled{opacity:.45;cursor:not-allowed}
 .br.wk{grid-template-columns:minmax(6rem,11rem) 1fr 2.5rem}.br.wk span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Multi-select filters, tests */
+.ms{position:relative}
+.msb{font:inherit;font-size:1rem;font-weight:400;color:var(--fg);padding:.5rem .6rem;border:2px solid var(--line);border-radius:.5rem;background:#fff;min-height:2.5rem;text-align:left}
+.msb[aria-expanded="true"],.msb:hover{border-color:var(--b2)}
+.msp{position:absolute;z-index:6;top:calc(100% + 2px);left:0;min-width:100%;max-width:22rem;background:#fff;border:1px solid var(--line);border-radius:.5rem;box-shadow:0 .375rem 1.25rem rgba(0,0,0,.22);max-height:16rem;overflow:auto;padding:.25rem}
+.mi2{display:flex;gap:.5rem;align-items:flex-start;padding:.375rem .5rem;font-weight:400;color:var(--fg);font-size:.9375rem;cursor:pointer;border-radius:.375rem}.mi2:hover{background:var(--sel)}
+.fl .msp input,.ckl input{min-height:0;height:1.15rem;width:1.15rem;padding:0;accent-color:var(--b2);flex:none;margin-top:.15rem}
+.ckl{display:inline-flex;gap:.5rem;align-items:center;font-weight:600;cursor:pointer;margin:.25rem 0}.ckl input{width:1.4rem;height:1.4rem;margin:0}
+.dt{border-collapse:collapse;font-size:.9375rem;margin:.5rem 0}.dt th,.dt td{padding:.3rem .9rem .3rem 0;text-align:left;border-bottom:1px solid #e3e6ea}.dt th{color:var(--mut);font-weight:600}
 </style>
 </head>
 <body>
@@ -311,10 +321,10 @@ const hd=()=>`<header><div class="hd"><div class="hl"><div class="t1">${SEC()}</
 function test(){
   const q=S.q[S.i],k=S.i,M=S.T.math;
   const qh=`<div class="qh"><span class="qn">${k+1}</span><button class="mk${S.m[k]?" on":""}" data-a="mark" aria-pressed="${!!S.m[k]}">${bm(S.m[k])} Mark for Review</button><button class="ab${S.e?" on":""}" data-a="elim" aria-pressed="${!!S.e}" aria-label="Eliminate choices"><s>ABC</s></button></div>`;
-  const opts=(q.g?[]:q.c).map((c,j)=>`<div class="opt${S.a[k]===j?" on":""}${S.x[k][j]?" cr":""}"><button class="pk" data-a="pick" data-k="${j}"><span class="lt">${L[j]}</span><span class="tx">${esc(c)}</span></button>${S.e?`<button class="xb" data-a="cross" data-k="${j}" aria-label="Eliminate ${L[j]}">${S.x[k][j]?"Undo":"<s>"+L[j]+"</s>"}</button>`:""}</div>`).join("");
+  const opts=(q.g?[]:q.c).map((c,j)=>`<div class="opt${S.a[k]===j?" on":""}${S.x[k][j]?" cr":""}"><button class="pk" data-a="pick" data-k="${j}"><span class="lt">${L[j]}</span><span class="tx">${q.cw?img(c,q.cw[j]):esc(c)}</span></button>${S.e?`<button class="xb" data-a="cross" data-k="${j}" aria-label="Eliminate ${L[j]}">${S.x[k][j]?"Undo":"<s>"+L[j]+"</s>"}</button>`:""}</div>`).join("");
   const gi=q.g?`<p class="hint">Enter your answer as a whole number, decimal, or fraction like 3/4.</p><input id="gi" class="gi" autocomplete="off" placeholder="Your answer" value="${S.a[k]===-1?'':esc(S.a[k])}">`:'';
-  if(M)return `<main class="split one${calcOn?' co':''}"><section class="pane" aria-label="Question">${qh}<p class="mt" data-hl="p">${esc(q.p)}</p>${gi}${opts}</section></main>`;
-  return `<main class="split"><section class="pane psg" aria-label="Passage"><p data-hl="p">${blank(q.p)}</p></section><section class="pane" aria-label="Question">${qh}<p class="stem" data-hl="s">${esc(stem(q))}</p>${opts}</section></main>`;
+  if(M)return `<main class="split one${calcOn?' co':''}"><section class="pane" aria-label="Question">${qh}${q.qi?img(q.qi,q.qw):`<p class="mt" data-hl="p">${esc(q.p)}</p>`}${gi}${opts}</section></main>`;
+  return `<main class="split"><section class="pane psg" aria-label="Passage">${q.lib?`<div data-hl="p">${para(q.p).replace(/___+/,'<span class="blank"></span>')}</div>`:`<p data-hl="p">${blank(q.p)}</p>`}</section><section class="pane" aria-label="Question">${qh}<p class="stem" data-hl="s">${esc(stem(q))}</p>${opts}</section></main>`;
 }
 const review=()=>`<main class="rv"><h1>Check Your Work</h1><p>On test day, you won’t be able to move on to the next module until time expires.</p><p>For these practice questions, you can click <b>Submit</b> when you’re ready to move on.</p><div class="card"><div class="top"><b style="font-size:20px">${SEC()} Questions</b>${legend}</div>${grid()}</div></main>`;
 const ft=()=>S.v==="t"
@@ -333,25 +343,33 @@ function home(){
 <div class="hg"><div class="cd"><h2>Skills to work on</h2>${wk?`<div style="padding:0 1.5rem 1.125rem">${X.skl.filter(k=>k[1][0]<k[1][1]).slice(0,4).map(([t,[r,m]])=>`<div class="br wk"><span title="${esc(t)}">${esc(t)}</span><div class="tr"><i style="width:${r/m*100}%"></i></div><b>${r}/${m}</b></div>`).join('')}</div>`:`<p>${X.E.length?'No weak spots so far. Nice work.':'Solve a few questions and your weak spots will show up here.'}</p>`}<div class="row"><button class="btn alt sm" data-a="an">Open Analyze</button></div></div>
 <div class="cd"><h2>Recent activity</h2>${rec.length?`<div style="padding:0 1.5rem 1.125rem">${rec.map(x=>`<p style="padding:0;margin:.4rem 0"><span class="${x.s.r?'good':'warn'}"><b>${x.s.r?'✓':'✗'}</b></span> ${esc(x.it.k)} <small class="hint">· ${TS[x.it.s]} · ${new Date(x.s.d).toLocaleDateString()}</small></p>`).join('')}</div>`:'<p>Nothing yet. Start with a quick practice above.</p>'}${lt?`<p><small class="hint">Last test: ${esc(lt.n)} · ${lt.s}/${lt.N} (${lt.p}%)</small></p>`:''}</div></div></main>`}
 function mtV(){
- $("#app").innerHTML=topbar()+`<main class="rs"><h1>My Tests</h1><p>Pick a test, set your own timer, and start.</p><div class="row"><button class="btn alt" data-a="build">Build a full-length test</button></div>${all().map((T,i)=>`<article class="cd"><h2>${esc(T.name)}</h2><p>${T.q.length} questions${T.mods?" · "+T.mods.length+" modules (full-length)":""}</p><div class="row"><label>Minutes <input type="number" id="mn${i}" min="1" max="300" step="1" value="${T.mins}"></label><label><input type="checkbox" id="un${i}"> No timer</label><button class="btn" data-a="start" data-k="${i}">Start</button>${T.b?"":`<button class="btn alt" data-a="del" data-k="${i-BUILT.length}">Delete</button>`}</div></article>`).join("")}
-<details><summary>Add a new test</summary><p>Paste the JSON that Claude gives you for your new questions.</p><textarea id="imp" placeholder='{"name":"My test","mins":20,"questions":[{"t":"Grammar","p":"Sentence with ___ blank.","c":["A","B","C","D"],"a":0,"e":"Why A is right"}]}'></textarea><div class="row"><button class="btn" data-a="imp">Add test</button><span id="impm">${esc(msg)}</span></div></details></main>`;$('#app').insertAdjacentHTML('beforeend',extras())}
+ const H=hist.map((h,i)=>[h,i]).filter(x=>x[0].ms).slice(0,6);
+ $("#app").innerHTML=topbar()+`<main class="rs wide"><h1>My Tests</h1><p>Full-length tests that behave like the real digital SAT, plus your own practice sets.</p>
+<div class="cd"><h2>Full-Length Practice Test</h2><p>Questions are picked at random from the Question Library to match the real test blueprint. After Module 1, the test decides in a moment whether your Module 2 is harder or easier, based on how you did.</p>
+<div class="row"><label class="fl" style="min-width:15rem">Sections<select id="gmode"><option value="full">Reading &amp; Writing + Math (98 questions)</option><option value="rw">Reading &amp; Writing only (54)</option><option value="m">Math only (44)</option></select></label><label class="ckl"><input type="checkbox" id="unfull"> No timer</label><button class="btn" data-a="gen"${GB?' disabled':''}>${GB?'Building…':'Start new test'}</button></div>
+${GB?`<p class="hint">${esc(GB)}</p>`:msg?`<p class="er2">${esc(msg)}</p>`:''}
+<details style="margin:0 1.5rem 1.125rem"><summary>How each module is built</summary><div style="overflow-x:auto"><table class="dt"><tr><th>Module</th><th>Easy</th><th>Medium</th><th>Hard</th></tr><tr><td>Reading &amp; Writing 1 (27)*</td><td>10</td><td>11</td><td>6</td></tr><tr><td>Reading &amp; Writing 2, harder*</td><td>4</td><td>7</td><td>16</td></tr><tr><td>Reading &amp; Writing 2, easier*</td><td>18</td><td>6</td><td>3</td></tr><tr><td>Math 1 (22)</td><td>8</td><td>9</td><td>5</td></tr><tr><td>Math 2, harder</td><td>3</td><td>6</td><td>13</td></tr><tr><td>Math 2, easier</td><td>15</td><td>5</td><td>2</td></tr></table></div><p class="hint" style="padding:0">Math numbers are averages from the official Bluebook tests. *Reading &amp; Writing numbers are scaled from them. Module 2 is harder when your Module 1 result, weighted by question difficulty, is at or above roughly 18 of 27 (15 of 22 in Math).</p></details></div>
+${H.length?`<h2>Recent full tests</h2><div class="cd lst">${H.map(([h,i])=>`<div class="lr" style="grid-template-columns:1fr auto"><span class="sk"><b>${esc(h.n)}</b><small>${h.ms.map(m=>esc(m.n.replace('Reading and Writing','R&W'))+' '+m.c+'/'+m.k).join(' · ')}</small></span><button class="btn alt sm" data-a="open" data-k="${i}">${h.s}/${h.N} · Analysis</button></div>`).join('')}</div><p><small class="hint">Every answer from a full test also counts in Solved Questions and Analyze.</small></p>`:''}
+<h2>Practice sets</h2><div class="hg">${all().map((T,i)=>`<div class="cd"><h2>${esc(T.name)}</h2><p>${T.q.length} questions${T.mods?" · "+T.mods.length+" modules":""}</p><div class="row"><label>Minutes <input type="number" id="mn${i}" min="1" max="300" step="1" value="${T.mins}"></label><label class="ckl"><input type="checkbox" id="un${i}"> No timer</label><button class="btn sm" data-a="start" data-k="${i}">Start</button>${T.b?"":`<button class="btn alt sm" data-a="del" data-k="${i-BUILT.length}">Delete</button>`}</div></div>`).join("")}</div>
+<details><summary>Create your own tests</summary><div class="row"><button class="btn alt" data-a="build">Build a full-length test from files</button></div><p>Or paste the JSON that Claude gives you for a short test.</p><textarea id="imp" placeholder='{"name":"My test","mins":20,"questions":[{"t":"Grammar","p":"Sentence with ___ blank.","c":["A","B","C","D"],"a":0,"e":"Why A is right"}]}'></textarea><div class="row"><button class="btn" data-a="imp">Add test</button><span id="impm">${esc(msg)}</span></div></details></main>`;$('#app').insertAdjacentHTML('beforeend',extras())}
 function anV(){
- const X=stats();
+ const X=stats(),dd=['E','M','H'].map(d=>{const a=X.E.filter(x=>x.it.f===d);return[d,a.filter(x=>x.s.r).length,a.length]});
  $("#app").innerHTML=topbar()+`<main class="rs wide"><h1>Analyze</h1><div class="sg"><div class="st"><b>${X.E.length}</b><span>Questions solved</span></div><div class="st"><b>${X.E.length?Math.round(X.C/X.E.length*100)+'%':'–'}</b><span>Accuracy</span></div><div class="st"><b>${X.st}</b><span>Day streak</span></div><div class="st"><b>${X.E.length?fmt(Math.round(X.E.reduce((a,x)=>a+x.s.t,0)/X.E.length)):'–'}</b><span>Avg time per question</span></div></div>
 <div class="row"><button class="btn alt sm" data-a="sol">Open solved questions</button></div>
 <h2>By skill</h2>${X.skl.length?`<div class="cd" style="padding:1rem 1.5rem">${X.skl.map(([t,[r,m]])=>`<div class="br wk"><span title="${esc(t)}">${esc(t)}</span><div class="tr"><i style="width:${r/m*100}%"></i></div><b>${r}/${m}</b></div>`).join('')}</div>`:'<p>Solve questions in the Library to see your skills here.</p>'}
+<h2>By difficulty</h2>${dd.some(x=>x[2])?`<div class="cd" style="padding:1rem 1.5rem">${dd.map(([d,r,m])=>m?`<div class="br wk"><span>${DFN[d]}</span><div class="tr"><i style="width:${r/m*100}%"></i></div><b>${r}/${m}</b></div>`:'').join('')}</div>`:'<p>No data yet.</p>'}
 <h2>Past test results</h2>${hist.length?hist.slice(0,20).map((h,i)=>`<p>${h.q?`<button class="lk" data-a="open" data-k="${i}">View analysis</button> `:''}${new Date(h.d).toLocaleDateString()} · ${esc(h.n)} · <b>${h.s}/${h.N}</b> (${h.p}%)</p>`).join("")+'<button class="btn alt" data-a="clr">Clear history</button>':"<p>No tests finished yet.</p>"}</main>`;$('#app').insertAdjacentHTML('beforeend',extras())}
-function results(){
+function results(){if(S.ld){$("#app").innerHTML='<main class="rs"><h1>Loading your test…</h1></main>';return}
   const q=S.q,n=q.length,ok=q.map((x,k)=>okq(x,S.a[k])),sc=ok.filter(Boolean).length,p=Math.round(sc/n*100);
   const tp={};q.forEach((x,k)=>{const t=x.t||"General";tp[t]=tp[t]||[0,0];tp[t][1]++;if(ok[k])tp[t][0]++});
   const tops=Object.entries(tp).sort((a,b)=>a[1][0]/a[1][1]-b[1][0]/b[1][1]),weak=tops.filter(t=>t[1][0]<t[1][1])[0];
   const tot=S.tt.reduce((a,b)=>a+b,0),sl=S.tt.indexOf(Math.max(...S.tt)),un=S.a.filter(a=>a===-1).length;
   $("#app").innerHTML=`<main class="rs"><h1>Results: ${esc(S.T.name)}</h1><p class="big ${p>=70?"good":"warn"}">${sc}/${n}</p><p><b>${p}%</b> correct · ${n-sc-un} wrong · ${un} unanswered<br>Rough scale estimate: <b>${Math.round((200+p*6)/10)*10}</b> out of 800 (unofficial, for practice only)</p>
 <p>Total time ${fmt(tot)} · average ${Math.round(tot/n)}s per question · slowest: question ${sl+1} (${S.tt[sl]}s)</p>
-<h2>By skill</h2>${tops.map(([t,[r,m]])=>`<div class="br"><span>${esc(t)}</span><div class="tr"><i style="width:${r/m*100}%"></i></div><b>${r}/${m}</b></div>`).join("")}
+${S.ms?`<h2>Modules</h2>${S.ms.map(m=>`<div class="br" style="grid-template-columns:minmax(10rem,19rem) 1fr 3rem"><span>${esc(m.n)}</span><div class="tr"><i style="width:${m.c/m.k*100}%"></i></div><b>${m.c}/${m.k}</b></div>`).join("")}`:""}${q.some(x=>x.df)?`<h2>By difficulty</h2>${["E","M","H"].map(d=>{const ix=q.map((x,k)=>x.df===d?k:-1).filter(k=>k>=0),r=ix.filter(k=>ok[k]).length;return ix.length?`<div class="br"><span>${DFN[d]}</span><div class="tr"><i style="width:${r/ix.length*100}%"></i></div><b>${r}/${ix.length}</b></div>`:""}).join("")}`:""}<h2>By skill</h2>${tops.map(([t,[r,m]])=>`<div class="br"><span>${esc(t)}</span><div class="tr"><i style="width:${r/m*100}%"></i></div><b>${r}/${m}</b></div>`).join("")}
 <p>${weak?`Focus next on <b>${esc(weak[0])}</b>.`:"Every skill area was perfect. Nice work."}</p>
 <div class="row"><button class="btn${S.f==="a"?"":" alt"}" data-a="fa">All questions</button><button class="btn${S.f==="w"?"":" alt"}" data-a="fw">Wrong only</button></div>
-${q.map((x,k)=>{if(S.f==="w"&&ok[k])return"";const u=S.a[k];return `<article class="${ok[k]?"ok":""}"><h2>${k+1}. ${ok[k]?"Correct":u===-1?"Not answered":"Incorrect"} · ${esc(x.t||"General")} · ${S.tt[k]}s</h2><p class="ps">${(x._m||S.T.math)?esc(x.p):blank(x.p)}</p><p>Your answer: <b>${u===-1?"none":x.g?esc(u):L[u]+". "+esc(x.c[u])}</b><br>Correct answer: <b>${x.g?esc([].concat(x.a).join(" or ")):L[x.a]+". "+esc(x.c[x.a])}</b></p><p>${esc(x.e||"")}</p></article>`}).join("")}
+${q.map((x,k)=>{if(S.f==="w"&&ok[k])return"";const u=S.a[k];return `<article class="${ok[k]?"ok":""}"><h2>${k+1}. ${ok[k]?"Correct":u===-1?"Not answered":"Incorrect"} · ${esc(x.t||"General")}${x.df?" · "+DFN[x.df]:""} · ${S.tt[k]}s</h2>${qtx(x)}<p>Your answer: <b>${u===-1?"none":x.g?esc(u):ch(x,u)}</b><br>Correct answer: <b>${x.g?esc([].concat(x.a).join(" or ")):ch(x,x.a)}</b></p>${rat(x)}</article>`}).join("")}
 <div class="row">${S.re?'':'<button class="btn" data-a="retry">Retake</button>'}<button class="btn alt" data-a="home">Home</button></div></main>`;
 }
 const CL=['#c74440','#2d70b3','#388c46','#6042a6','#000'],K={r:[{s:''}],v:{x:0,y:0,s:40}};
@@ -447,11 +465,11 @@ const sv=b=>`<svg viewBox="0 0 110 80" width="110" height="80" fill="none" strok
 const REF=`<div id="rf" role="dialog" aria-label="Reference sheet"><div class="rh"><span>Reference</span><button data-a="ref" aria-label="Close">✕</button></div><div class="rb"><div class="rg">`+[rc(sv('<circle cx="50" cy="40" r="30"/><path d="M50 40h30"/>'+T(62,36,'r')),'A = πr²<br>C = 2πr'),rc(sv('<rect x="15" y="22" width="80" height="45"/>'+T(52,16,'ℓ')+T(99,48,'w')),'A = ℓw'),rc(sv('<path d="M10 70L50 10l45 60z"/><path d="M50 10v60" stroke-dasharray="3"/>'+T(53,45,'h')+T(48,79,'b')),'A = ½bh'),rc(sv('<path d="M25 10v60h70z"/>'+T(12,42,'b')+T(60,79,'a')+T(62,36,'c')),'c² = a² + b²'),rc(sv('<path d="M8 70h70V35z"/>'+T(30,62,'30°')+T(30,40,'2x')+T(82,55,'x')+T(28,79,'x√3')),'30°-60°-90°'),rc(sv('<path d="M20 8v62h62z"/>'+T(8,40,'s')+T(45,79,'s')+T(55,36,'s√2')),'45°-45°-90°'),rc(sv('<rect x="10" y="34" width="55" height="36"/><path d="M10 34l20-16h55l-20 16M85 18v36l-20 16"/>'),'V = ℓwh'),rc(sv('<ellipse cx="50" cy="18" rx="30" ry="9"/><path d="M20 18v44M80 18v44"/><ellipse cx="50" cy="62" rx="30" ry="9"/>'),'V = πr²h'),rc(sv('<circle cx="50" cy="40" r="32"/><ellipse cx="50" cy="40" rx="32" ry="9" stroke-dasharray="3"/>'),'V = (4/3)πr³'),rc(sv('<path d="M50 6L20 62M50 6l30 56"/><ellipse cx="50" cy="62" rx="30" ry="9"/>'),'V = (1/3)πr²h'),rc(sv('<path d="M8 68l38 8 46-20L52 8zM52 8L46 76"/>'),'V = (1/3)ℓwh')].join('')+`</div><p>The number of degrees of arc in a circle is 360.</p><p>The number of radians of arc in a circle is 2π.</p><p>The sum of the measures in degrees of the angles of a triangle is 180.</p></div></div>`;
 
 function startFull(T,u){const F={T,i:0,u,res:[]},m=T.mods[0];start({name:T.name,mins:m.mins,q:m.q,math:m.math,sec:m.sec},u,0);S.full=F}
-function nextMod(){const F=S.full;F.i++;const m=F.T.mods[F.i];start({name:F.T.name,mins:m.mins,q:m.q,math:m.math,sec:m.sec},F.u,0);S.full=F}
-function mover(){$('#app').innerHTML='<main class="mo"><h1>This Module Is Over</h1><p>All your work has been saved.</p><p>You’ll move on automatically in just a moment.</p></main>';setTimeout(()=>{if(S.v!=='mo')return;if(S.brk)S.v='br';else nextMod();render()},2500)}
+function nextMod(){const F=S.full,n=F.T.mods[F.i+1],go=()=>{F.i++;const m=F.T.mods[F.i];start({name:F.T.name,mins:m.mins,q:m.q,math:m.math,sec:m.sec},F.u,0);S.full=F;render()};if(n.q)go();else(n.p||Promise.resolve([])).then(q=>{n.q=q;if(S.v==='mo'||S.v==='br')go()})}
+function mover(){$('#app').innerHTML='<main class="mo"><h1>This Module Is Over</h1><p>All your work has been saved.</p><p>You’ll move on automatically in just a moment.</p></main>';setTimeout(()=>{if(S.v!=='mo')return;if(S.brk)S.v='br';else{nextMod();return}render()},2500)}
 let bt,bs=600;
 function brk(){bs=600;$('#app').innerHTML='<main class="brk"><div class="bx"><p>Remaining Break Time:</p><b id="bt">10:00</b><button class="yb" data-a="resume">Resume Testing</button></div><div><h1>Practice Test Break</h1><p>You can resume as soon as you’re ready. On test day you’ll wait until the clock counts down.</p><p>Do not close your device during the break.</p></div></main>';clearInterval(bt);bt=setInterval(()=>{bs--;const e=$('#bt');if(e)e.textContent=fmt(Math.max(bs,0));if(bs<=0)resumeT()},1000)}
-function resumeT(){clearInterval(bt);if(S.v==='br')nextMod()}
+function resumeT(){clearInterval(bt);if(S.v==='br'){nextMod();S.v='mo'}}
 const BLM=[['Reading and Writing — Module 1','Section 1, Module 1: Reading and Writing',0,32],['Reading and Writing — Module 2','Section 1, Module 2: Reading and Writing',0,32],['Math — Module 1','Section 2, Module 1: Math',1,35],['Math — Module 2','Section 2, Module 2: Math',1,35]];
 let BL={name:'',err:'',m:BLM.map(()=>({t:'',j:'',s:''}))};
 const chkQ=qs=>{if(!Array.isArray(qs)||!qs.length)return'No questions found.';for(let k=0;k<qs.length;k++){const x=qs[k];if(!x||typeof x.p!=='string'||(x.g?(x.a===undefined||x.a===''||![].concat(x.a).length):(!Array.isArray(x.c)||x.c.length<2||x.c.length>4||!Number.isInteger(x.a)||x.a<0||x.a>=x.c.length)))return'Question '+(k+1)+' is missing text or has an invalid answer.'}return''};
@@ -494,11 +512,11 @@ function render(){
 function finish(){
   if(S.v==="r")return;
   const F=S.full;
-  if(F){F.res.push({q:S.q,a:S.a,tt:S.tt});clearInterval(timer);
+  if(F){F.res.push({q:S.q,a:S.a,tt:S.tt});clearInterval(timer);prefetch(F);
     if(F.i<F.T.mods.length-1){S={v:'mo',full:F,brk:!F.T.mods[F.i].math&&F.T.mods[F.i+1].math};return}
-    const R=F.res;S.q=R.flatMap(r=>r.q);S.a=R.flatMap(r=>r.a);S.tt=R.flatMap(r=>r.tt);S.T={name:F.T.name,math:0};S.u=1;S.full=null;S.re=1}
+    const R=F.res;S.q=R.flatMap(r=>r.q);S.a=R.flatMap(r=>r.a);S.tt=R.flatMap(r=>r.tt);S.T={name:F.T.name,math:0};S.u=1;S.ms=F.T.mods.map((m,i)=>F.res[i]?{n:m.name+(m.lvl?(m.lvl==='h'?' (harder)':' (easier)'):''),k:F.res[i].q.length,c:F.res[i].q.filter((x,k)=>okq(x,F.res[i].a[k])).length}:null).filter(Boolean);S.full=null;S.re=1}
   const sc=S.q.reduce((n,x,k)=>n+(okq(x,S.a[k])?1:0),0);
-  hist.unshift({n:S.T.name,d:Date.now(),s:sc,N:N(),p:Math.round(sc/N()*100),q:S.q,a:S.a,tt:S.tt,mt:S.T.math?1:0});hist=hist.slice(0,20);SV("bb_hist",hist);
+  recSol();hist.unshift({n:S.T.name,d:Date.now(),s:sc,N:N(),p:Math.round(sc/N()*100),q:S.q.map(slim),a:S.a,tt:S.tt,mt:S.T.math?1:0,L:S.q.some(x=>x.lib)?1:0,ms:S.ms});hist=hist.slice(0,20);SV("bb_hist",hist);
   S.v="r";S.nav=0;S.f="a";clearInterval(timer);
 }
 function clock(){clearInterval(timer);timer=setInterval(()=>{
@@ -526,10 +544,10 @@ document.addEventListener("click",e=>{
   else if(a==="del")cf={t:'Delete this test?',y:'del',k};
   else if(a==="clr")cf={t:'Clear all past results?',y:'clr'};
   else if(a==="exit")cf={t:'Leave this test? Your answers will be lost.',y:'exit'};
-  else if(a==="no")cf=0;else if(a==="set")SETO^=1;else if(a==="zr"){UZ=.9;SV("bb_z",UZ);setZ()}else if(a==="mt"||a==="an"){clearInterval(timer);S={v:a}}else if(a==="nback"){const p=HS.pop();if(p){GOBACK=1;S={v:p}}}else if(a==="gl"){GOAL=Math.min(100,Math.max(5,GOAL+k));SV("gb_goal",GOAL)}else if(a==="hq"){const l=quick(t.dataset.q);if(l.length)openQ(l,0)}
+  else if(a==="no")cf=0;else if(a==="set")SETO^=1;else if(a==="gen")startGen();else if(a==="zr"){UZ=.9;SV("bb_z",UZ);setZ()}else if(a==="mt"||a==="an"){clearInterval(timer);S={v:a}}else if(a==="nback"){const p=HS.pop();if(p){GOBACK=1;S={v:p}}}else if(a==="gl"){GOAL=Math.min(100,Math.max(5,GOAL+k));SV("gb_goal",GOAL)}else if(a==="hq"){const l=quick(t.dataset.q);if(l.length)openQ(l,0)}
   else if(a==="yes"){const y=cf.y;if(y==='del'){custom.splice(cf.k,1);SV('bb_tests',custom)}else if(y==='clr'){hist=[];SV('bb_hist',hist)}else{clearInterval(timer);S={v:'home'};msg=''}cf=0}
   else if(a==="home"){clearInterval(timer);S={v:'home'};msg=''}
-  else if(a==="open"){const h=hist[k];S={v:'r',T:{name:h.n,math:h.mt},q:h.q,a:h.a,tt:h.tt,f:'a',re:1,u:1}}
+  else if(a==="open"){const h=hist[k];S={v:'r',T:{name:h.n,math:h.mt},q:h.q,a:h.a,tt:h.tt,f:'a',re:1,u:1,ms:h.ms};if(h.L){S.ld=1;const me=S;hyd(h.q).then(q=>{me.q=q;me.ld=0;if(S===me)render()})}}
   else if(a==="retry")start(s.T,s.u,s.mins);
   else if(a==="fa")s.f="a";
   else if(a==="fw")s.f="w";
@@ -553,7 +571,7 @@ document.addEventListener("click",e=>{
 const QB={ld:{},cb:{}};
 function QB_CHUNK(n,d){QB.ld[n]=d;(QB.cb[n]||[]).splice(0).forEach(f=>f())}
 const HAVE=typeof QB_META!=='undefined';
-let UQ=ST('gb_uq')||[],SOL=ST('gb_sol')||{},LB={test:'',dom:'',sk:'',df:'',st:'1',res:'',q:'',pg:0,list:[]},P=null,PT,BG={t:'',j:'',m:'',err:'',name:''};
+let UQ=ST('gb_uq')||[],SOL=ST('gb_sol')||{},LB=LB0(),P=null,PT,BG={t:'',j:'',m:'',err:'',name:''};
 const DFN={E:'Easy',M:'Medium',H:'Hard'},PG=25,TS={rw:'Reading and Writing',m:'Math'};
 const ALLQ=()=>(HAVE?QB_META:[]).concat(UQ);
 const byId=id=>ALLQ().find(x=>x.id===id);
@@ -566,18 +584,18 @@ const img=(b,w)=>`<img class="mi" alt="" src="data:image/png;base64,${b}" style=
 const bars=f=>`<span class="db d${'EMH'.indexOf(f)+1}" title="${DFN[f]}"><i></i><i></i><i></i></span>`;
 const para=s=>String(s||'').split(/\n\n/).map(p=>`<p>${esc(p)}</p>`).join('');
 const uniq=a=>[...new Set(a)].sort();
-function filt(){const q=LB.q.trim().toLowerCase();return ALLQ().filter(x=>(!LB.test||x.s===LB.test)&&(!LB.dom||x.d===LB.dom)&&(!LB.sk||x.k===LB.sk)&&(!LB.df||x.f===LB.df)&&(!LB.st||String(x.v)===LB.st)&&(!q||x.id.toLowerCase().includes(q))&&(!LB.res||(LB.res==='u'?!SOL[x.id]:LB.res==='c'?SOL[x.id]&&SOL[x.id].r:SOL[x.id]&&!SOL[x.id].r)))}
-const sel=(f,lab,opts,cur)=>`<label class="fl">${lab}<select data-f="${f}"><option value="">All</option>${opts.map(o=>{const[v,t]=[].concat(o,o);return`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(t)}</option>`}).join('')}</select></label>`;
+function LB0(){return{test:[],dom:[],sk:[],df:[],res:[],q:'',rm:0,o:'',pg:0,list:[]}}
+const inn=(a,v)=>!a.length||a.includes(v);
+function filt(){const q=LB.q.trim().toLowerCase();return ALLQ().filter(x=>inn(LB.test,x.s)&&inn(LB.dom,x.d)&&inn(LB.sk,x.k)&&inn(LB.df,x.f)&&(!LB.rm||!x.v)&&(!q||x.id.toLowerCase().includes(q))&&(!LB.res.length||LB.res.some(r=>{const o=SOL[x.id];return r==='u'?!o:r==='c'?o&&o.r:o&&!o.r})))}
+const msel=(f,lab,opts)=>{const cur=LB[f],o=LB.o===f;return`<div class="fl ms">${lab}<button class="msb" data-a="mso" data-m="${f}" aria-expanded="${o}">${cur.length?cur.length+' selected':'All'} ▾</button>${o?`<div class="msp">${opts.map(([v,t])=>`<label class="mi2"><input type="checkbox" data-f="${f}" data-v="${esc(v)}"${cur.includes(v)?' checked':''}> ${esc(t)}</label>`).join('')}</div>`:''}</div>`};
 const NAVI=[['home','Home'],['lib','Library'],['mt','My Tests'],['an','Analyze']],TOPV={home:1,mt:1,lib:1,sol:1,an:1,bld:1};
 const topbar=()=>{const cur=({home:'home',lib:'lib',bld:'lib',mt:'mt',sol:'an',an:'an'})[S.v];return `<div class="bh"><div class="bl"><button class="bk" data-a="nback" aria-label="Go back"${HS.length?'':' disabled'}>←</button><span class="lg2">✦ Greenbook</span></div><nav class="bnv" aria-label="Main">${NAVI.map(([a,t])=>`<button data-a="${a}"${a===cur?' class="on" aria-current="page"':''}>${t}</button>`).join('')}</nav><div class="br2"><button class="gear" data-a="set" aria-label="Settings" aria-expanded="${!!SETO}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>${SETO?`<div class="stm" role="dialog" aria-label="Settings"><h3>Settings</h3><div class="srow"><span>Interface size</span><span class="zr"><button data-a="zm" aria-label="Smaller">A−</button><b>${Math.round(UZ*100)}%</b><button data-a="zp" aria-label="Larger">A+</button></span></div><button class="lk" data-a="zr">Reset size</button></div>`:''}</div></div>`};
 function libV(){
- const A=ALLQ(),sub=A.filter(x=>!LB.test||x.s===LB.test),doms=uniq(sub.map(x=>x.d)),sks=uniq(sub.filter(x=>!LB.dom||x.d===LB.dom).map(x=>x.k));
+ const A=ALLQ(),sub=A.filter(x=>!LB.test.length||LB.test.includes(x.s)),doms=uniq(sub.map(x=>x.d));LB.dom=LB.dom.filter(d=>doms.includes(d));const sks=uniq(sub.filter(x=>!LB.dom.length||LB.dom.includes(x.d)).map(x=>x.k));LB.sk=LB.sk.filter(k=>sks.includes(k));
  const L=LB.list=filt(),np=Math.max(1,Math.ceil(L.length/PG));LB.pg=Math.min(LB.pg,np-1);const pg=L.slice(LB.pg*PG,LB.pg*PG+PG);
  $("#app").innerHTML=topbar()+`<main class="rs wide"><h1>Question Library</h1><p>${HAVE?A.length+' questions in the pool':'<span class="er2">Question data not found. Keep the <b>data</b> folder next to index.html.</span>'} · pick a question to practice it with a timer.</p>
-<div class="fgrid">${sel('test','Test',[['rw',TS.rw],['m',TS.m]],LB.test)}${sel('dom','Domain',doms,LB.dom)}${sel('sk','Skill',sks,LB.sk)}${sel('df','Difficulty',[['E','Easy'],['M','Medium'],['H','Hard']],LB.df)}
-<label class="fl">Status<select data-f="st"><option value="1"${LB.st==='1'?' selected':''}>Active</option><option value="0"${LB.st==='0'?' selected':''}>Non-active</option><option value=""${LB.st===''?' selected':''}>All</option></select></label>
-<label class="fl">Result<select data-f="res"><option value="">All</option><option value="u"${LB.res==='u'?' selected':''}>Unsolved</option><option value="c"${LB.res==='c'?' selected':''}>Solved · correct</option><option value="w"${LB.res==='w'?' selected':''}>Solved · wrong</option></select></label>
-<label class="fl">Question ID<input data-f="q" value="${esc(LB.q)}" placeholder="e.g. 3d1070c9"></label></div>
+<div class="fgrid">${msel('test','Section',[['rw',TS.rw],['m',TS.m]])}${msel('dom','Domain',doms.map(d=>[d,d]))}${msel('sk','Skill',sks.map(k=>[k,k]))}${msel('df','Difficulty',[['E','Easy'],['M','Medium'],['H','Hard']])}${msel('res','Result',[['u','Unsolved'],['c','Solved · correct'],['w','Solved · wrong']])}<label class="fl">Question ID<input data-f="q" value="${esc(LB.q)}" placeholder="e.g. 3d1070c9"></label></div>
+<label class="ckl"><input type="checkbox" data-f="rm"${LB.rm?' checked':''}> Remove active questions</label>
 <div class="row"><b>${L.length} questions</b><button class="btn alt sm" data-a="lreset">Reset filters</button><button class="btn sm" data-a="build">+ Add questions</button></div>
 <div class="cd lst">${pg.map((x,i)=>{const s=SOL[x.id];return`<button class="lr" data-a="gq" data-k="${LB.pg*PG+i}"><span class="id">${esc(x.id)}</span><span class="sk"><b>${esc(x.k)}</b><small>${TS[x.s]} · ${esc(x.d)}</small></span><span>${bars(x.f)}</span><span class="chip${x.v?'':' off'}">${x.v?'Active':'Non-active'}</span><span class="rz ${s?s.r?'good':'warn':''}">${s?s.r?'✓':'✗':''}</span></button>`}).join('')||'<p style="padding:1rem">No questions match these filters.</p>'}</div>
 <div class="row" style="justify-content:center"><button class="btn alt sm" data-a="lpg" data-k="-1"${LB.pg?'':' disabled'}>Previous</button><span>Page ${LB.pg+1} of ${np}</span><button class="btn alt sm" data-a="lpg" data-k="1"${LB.pg<np-1?'':' disabled'}>Next</button></div></main>`}
@@ -641,12 +659,13 @@ function fullTest(){const eng=x=>x.s==='m'?{t:x.k,p:x.data.p,..._(x),e:x.data.e,
 const _r0=render;
 render=function(){trk();if(S.v!=='lq'){clearInterval(PT);P=null}
  if(S.v==='mt')mtV();else if(S.v==='an')anV();else if(S.v==='lib')libV();else if(S.v==='lq'&&P)lqV();else if(S.v==='sol')solV();else if(S.v==='bld')bldV();else _r0()};
-document.addEventListener('change',e=>{const t=e.target,f=t.dataset&&t.dataset.f;if(!f)return;LB[f]=t.value;if(f==='test')LB.dom=LB.sk='';if(f==='dom')LB.sk='';LB.pg=0;render()});
+document.addEventListener('change',e=>{const t=e.target,f=t.dataset&&t.dataset.f;if(!f)return;if(f==='rm')LB.rm=t.checked?1:0;else if(t.type==='checkbox'){const a=LB[f],v=t.dataset.v,i=a.indexOf(v);i<0?a.push(v):a.splice(i,1)}else LB[f]=t.value;LB.pg=0;render()});
 document.addEventListener('input',e=>{const t=e.target;if(t.id==='gsp'&&P)P.sel=t.value;else if(t.id==='gjs')BG.j=t.value;else if(t.id==='gtn')BG.name=t.value});
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t||t.disabled)return;const a=t.dataset.a,k=+t.dataset.k;let go=1;
  if(a==='lib'||a==='sol'||a==='build'){S={v:a==='build'?'bld':a};}
- else if(a==='lreset')LB={test:'',dom:'',sk:'',df:'',st:'1',res:'',q:'',pg:0,list:[]};
+ else if(a==='lreset')LB=LB0();
  else if(a==='lpg')LB.pg+=k;
+ else if(a==='mso')LB.o=LB.o===t.dataset.m?'':t.dataset.m;
  else if(a==='gq')openQ(LB.list,k);
  else if(a==='sq')openQ(LB.sl,k);
  else if(a==='sf')LB.sf=['a','c','w'][k];
@@ -681,7 +700,52 @@ function qpool(q){const A=act(),X=stats();
  if(q==='weak'){const w=X.skl.find(k=>k[1][0]<k[1][1]);return w?A.filter(x=>x.k===w[0]):[]}
  const u=A.filter(x=>x.s===q&&!SOL[x.id]);return u.length?u:A.filter(x=>x.s===q)}
 const quick=q=>q==='qod'?qpool(q):shf(qpool(q)).slice(0,10);
-document.addEventListener('click',e=>{if(SETO&&!e.target.closest('.br2')){SETO=0;render()}});
+document.addEventListener('click',e=>{if(SETO&&!e.target.closest('.br2')){SETO=0;render()}if(LB.o&&!e.target.closest('.ms')){LB.o='';if(S.v==='lib')render()}});
+/* ===== Adaptive full-length generator ===== */
+/* Research notes: Math Module 1 averages ~8 easy / 9 medium / 5 hard (of 22); harder Module 2 ~3/6/13; easier Module 2 ~15/5/2
+   (tally of 8 official Bluebook tests, sigmaprep.io). Reading & Writing counts are scaled from the Math ratios (no tally found).
+   Question order by skill comes from official Practice Test 1 (test-ninjas.com). Routing: about 8 misses in Module 1 is the usual cutoff,
+   and College Board uses IRT, so missing easy questions costs more than missing hard ones. */
+const PS='Problem-Solving and Data Analysis',GE='Geometry and Trigonometry',CS='Craft and Structure',II='Information and Ideas',SE='Standard English Conventions',EI='Expression of Ideas';
+const SKD={WIC:['Words in Context',CS],TSP:['Text Structure and Purpose',CS],CTC:['Cross-Text Connections',CS],CID:['Central Ideas and Details',II],CET:['Command of Evidence (Textual)',II],CEQ:['Command of Evidence (Quantitative)',II],INF:['Inferences',II],BND:['Boundaries',SE],FSS:['Form, Structure, and Sense',SE],TRN:['Transitions',EI],RHS:['Rhetorical Synthesis',EI],
+LE1:['Linear equations in one variable','Algebra'],LE2:['Linear equations in two variables','Algebra'],LF:['Linear functions','Algebra'],SYS:['Systems of two linear equations in two variables','Algebra'],INQ:['Linear inequalities in one or two variables','Algebra'],
+EQX:['Equivalent expressions','Advanced Math'],NLE:['Nonlinear equations in one variable','Advanced Math'],NLF:['Nonlinear functions','Advanced Math'],
+RAT:['Ratios, rates, proportional relationships, and units',PS],PCT:['Percentages',PS],OVD:['One-variable data',PS],TVD:['Two-variable data',PS],PRB:['Probability and conditional probability',PS],INS:['Inference from sample statistics',PS],EVS:['Evaluating statistical claims',PS],
+ARV:['Area and volume',GE],LAT:['Lines, angles, and triangles',GE],RTT:['Right triangles and trigonometry',GE],CIR:['Circles',GE]};
+const BP={rw1:'WIC WIC TSP TSP CTC CID CID CID CET CEQ CEQ CEQ CEQ INF BND FSS BND FSS BND FSS BND TRN TRN TRN TRN RHS RHS',
+rwh:'WIC WIC WIC WIC WIC WIC WIC TSP CID CEQ CET CET CET CET INF INF BND FSS BND BND FSS BND TRN TRN TRN RHS RHS',
+rwe:'WIC WIC WIC WIC WIC WIC WIC WIC CID CET CET CET INF INF INF INF FSS FSS BND FSS FSS BND FSS TRN TRN TRN RHS',
+m1:'OVD EQX LE2 LAT LF PRB INS NLE TVD NLF CIR NLE EVS SYS LE1 NLF ARV SYS RTT NLF LF NLE',
+mh:'EQX PCT LE1 LE1 LF RAT LE1 NLF CIR RAT LE2 LE1 NLF LE2 NLE SYS SYS RTT LF OVD LF LAT',
+me:'OVD LE1 ARV EQX LE1 EQX PCT INQ LE1 NLF LF LF LAT LE2 RAT LE1 LF NLF NLF LF LE1 RTT'};
+const PROF={rw1:[10,11,6],rwh:[4,7,16],rwe:[18,6,3],m1:[8,9,5],mh:[3,6,13],me:[15,5,2]},EXP={rw:{E:.93,M:.85,H:.62},m:{E:.94,M:.81,H:.59}},DO={E:0,M:1,H:2};
+const rnd=a=>a[Math.floor(Math.random()*a.length)],nz=t=>String(t).toLowerCase().replace(/[^a-z0-9]/g,''),skm=(a,b)=>{a=nz(a);b=nz(b);return a.startsWith(b)||b.startsWith(a)};
+function assignD(key){const cs=BP[key].split(' '),n=cs.length,pf=PROF[key],M=key[0]==='m',dm=cs.map(c=>SKD[c][1]),g=[],sz={};let gi=0;
+ dm.forEach((d,i)=>{if(i&&d!==dm[i-1])gi++;g.push(gi);sz[gi]=(sz[gi]||0)+1});const pos={},rk=cs.map((c,i)=>{pos[g[i]]=(pos[g[i]]==null?0:pos[g[i]]+1);return(M?i/(n-1):pos[g[i]]/Math.max(1,sz[g[i]]-1))+(Math.random()-.5)*(M?.3:.12)});
+ const o=rk.map((r,i)=>i).sort((a,b)=>rk[a]-rk[b]),df=[];o.forEach((i,j)=>df[i]=j<pf[0]?'E':j<pf[0]+pf[1]?'M':'H');return df}
+function pickQ(code,df,used,sub){const[sk,dm]=SKD[code],A=act().filter(x=>x.s===sub&&!used.has(x.id));
+ for(const t of[x=>skm(x.k,sk),x=>nz(x.d)===nz(dm),()=>true]){const c=A.filter(t);if(!c.length)continue;
+  for(const dist of[0,1,2]){const cd=c.filter(x=>Math.abs(DO[x.f]-DO[df])===dist);if(cd.length){const u=cd.filter(x=>!SOL[x.id]);return rnd(u.length?u:cd)}}}return null}
+const mkQ=(it,d)=>({id:it.id,t:it.k,dm:it.d,df:it.f,lib:1,_m:it.s==='m'?1:0,g:it.t==='spr'?1:undefined,a:it.a,p:d.p||'',qi:d.q,qw:d.qw,s:d.st,c:d.c,cw:d.cw,e:d.e,ri:d.r,rw:d.rw});
+async function buildMod(key,used){const sub=key[0]==='m'?'m':'rw',ds=assignD(key),its=[];
+ BP[key].split(' ').forEach((c,i)=>{const it=pickQ(c,ds[i],used,sub);if(it){used.add(it.id);its.push(it)}});
+ return Promise.all(its.map(async it=>mkQ(it,await getQ(it))))}
+function route(R,sec){let r=0;R.q.forEach((x,k)=>{r+=(okq(x,R.a[k])?1:0)-(EXP[sec][x.df]||.8)});return r/R.q.length>=-.145?'h':'e'}
+function prefetch(F){const n=F.T.mods[F.i+1];if(!n||n.q)return;const sec=n.key[0]==='m'?'m':'rw',l=route(F.res[F.res.length-1],sec);n.lvl=l;n.p=buildMod(sec+l,F.T.used)}
+async function genFull(mode){if(!HAVE||act().length<60)throw new Error('Not enough questions in the library. Keep the data folder next to index.html.');
+ const used=new Set(),mods=[],rw=mode!=='m',m=mode!=='rw';
+ if(rw){mods.push({name:'Reading and Writing: Module 1',sec:'Section 1, Module 1: Reading and Writing',math:0,mins:32,q:await buildMod('rw1',used),key:'rw1'},{name:'Reading and Writing: Module 2',sec:'Section 1, Module 2: Reading and Writing',math:0,mins:32,q:null,key:'rw2'})}
+ if(m){mods.push({name:'Math: Module 1',sec:'Section 2, Module 1: Math',math:1,mins:35,q:await buildMod('m1',used),key:'m1'},{name:'Math: Module 2',sec:'Section 2, Module 2: Math',math:1,mins:35,q:null,key:'m2'})}
+ return{name:'Practice Test · '+new Date().toLocaleDateString(),mins:mods.reduce((a,x)=>a+x.mins,0),full:1,adp:1,math:0,q:[],mods,used}}
+let GB='';
+function startGen(){if(GB)return;const el=$('#gmode'),un=$('#unfull'),mode=el?el.value:'full',u=!!(un&&un.checked);GB='Building your test… the first one can take a little while.';render();
+ genFull(mode).then(T=>{GB='';if(S.v!=='mt'){render();return}startFull(T,u);render()}).catch(e=>{GB='';msg='Could not build the test: '+(e.message||e);render()})}
+const slim=x=>x.lib?{id:x.id,t:x.t,dm:x.dm,df:x.df,lib:1,_m:x._m,g:x.g,a:x.a}:x;
+const hyd=qs=>Promise.all(qs.map(x=>{const it=x.lib&&byId(x.id);return it?getQ(it).then(d=>mkQ(it,d)).catch(()=>x):x}));
+function recSol(){let ch=0;S.q.forEach((x,k)=>{if(!x.lib||S.a[k]===-1||S.a[k]==='')return;const o=SOL[x.id];SOL[x.id]={r:okq(x,S.a[k])?1:0,a:S.a[k],t:S.tt[k],d:Date.now(),n:(o?o.n:0)+1};ch=1});if(ch)SV('gb_sol',SOL)}
+const qtx=x=>x.lib?(x._m?(x.qi?img(x.qi,x.qw):`<p class="ps">${esc(x.p)}</p>`):`<div class="ps">${para(x.p).replace(/___+/,'<span class="blank"></span>')}</div>`):`<p class="ps">${(x._m||S.T.math)?esc(x.p):blank(x.p)}</p>`;
+const ch=(x,j)=>x.c&&x.c[j]!==undefined?L[j]+". "+(x.cw?img(x.c[j],x.cw[j]):esc(x.c[j])):'–';
+const rat=x=>x.lib?(x.ri?img(x.ri,x.rw):para(x.e)):`<p>${esc(x.e||"")}</p>`;
 setZ();
 render();
 </script>
