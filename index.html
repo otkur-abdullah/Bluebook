@@ -217,6 +217,26 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 .bh .lk{font-size:.9375rem;padding:.25rem 1rem;margin:0 .25rem}
 @media (max-width:760px){.lr{grid-template-columns:1fr auto 1.25rem}.lr .id,.lr .chip{display:none}.bh{flex-wrap:wrap;gap:.5rem;padding:1rem}}
 .split.one.wm>.pane{max-width:54rem}.mi{mix-blend-mode:multiply}
+
+/* Top navigation, home */
+.bh{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.5rem 1rem;padding:.75rem max(1rem,4%);font-size:1rem;font-weight:500}
+.bl{display:flex;align-items:center;gap:.75rem}
+.bk,.gear{background:#fff;border:1.5px solid var(--line);border-radius:50%;width:2.5rem;height:2.5rem;display:grid;place-items:center;padding:0;font-size:1.25rem;line-height:1;flex:none}
+.bk:disabled{opacity:.35;cursor:not-allowed}.bk:hover:not(:disabled),.gear:hover{background:var(--sel)}
+.bnv{display:flex;gap:.25rem;justify-content:center;background:#fff;border-radius:62rem;padding:.25rem;box-shadow:0 1px 6px rgba(0,0,0,.1)}
+.bnv button{border:0;background:none;border-radius:62rem;padding:.5rem 1.1rem;font-weight:600;font-size:1rem;white-space:nowrap}
+.bnv button:hover{background:var(--sel)}.bnv button.on{background:var(--b2);color:#fff}
+.br2{justify-self:end;position:relative}
+.stm{position:absolute;right:0;top:calc(100% + .5rem);z-index:8;background:#fff;border:1px solid var(--line);border-radius:.75rem;box-shadow:0 .375rem 1.5rem rgba(0,0,0,.25);padding:.875rem 1rem;min-width:15rem;font-weight:400}
+.stm h3{margin:0 0 .5rem;font-size:1rem}.srow{display:flex;justify-content:space-between;align-items:center;gap:.75rem;margin-bottom:.5rem}
+@media (max-width:760px){.bh{grid-template-columns:1fr auto;padding:.5rem .75rem}.bnv{grid-column:1/-1;order:3;overflow-x:auto}.bnv button{flex:1;padding:.5rem .6rem;font-size:.9375rem}}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.75rem;margin:1rem 0}
+.st{background:#fff;border-radius:1rem;box-shadow:0 2px .75rem rgba(0,0,0,.12);padding:1rem 1.25rem}
+.st b{display:block;font-size:1.75rem;line-height:1.2;color:var(--b2)}.st span{color:var(--mut);font-size:.875rem}
+.hg{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1rem;margin:1rem 0}.hg .cd{margin:0}
+.qs{background:#fff;border:2px solid var(--line);border-radius:1rem;padding:1rem 1.25rem;text-align:left;display:flex;flex-direction:column;gap:.25rem}
+.qs b{font-size:1.0625rem}.qs span{color:var(--mut);font-size:.875rem}.qs:hover:not(:disabled){border-color:var(--b2);background:var(--sel)}.qs:disabled{opacity:.45;cursor:not-allowed}
+.br.wk{grid-template-columns:minmax(6rem,11rem) 1fr 2.5rem}.br.wk span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -302,10 +322,25 @@ const ft=()=>S.v==="t"
   :`<footer class="ft"><span class="nm">${NAME}</span><span></span><div class="bn"><button class="btn alt" data-a="back">Back</button><button class="btn navy" data-a="submit">Submit</button></div></footer>`;
 const modal=()=>S.nav?`<div class="ov np" data-a="close"><div class="md" role="dialog" aria-label="Question navigator"><button class="xc" data-a="close" aria-label="Close">✕</button><h2 style="margin:0 30px">${SEC()} Questions</h2><hr><p class="lg" style="margin:8px 0"><span><svg width="16" height="20" viewBox="0 0 16 20" style="vertical-align:-4px"><path d="M8 1a6 6 0 0 0-6 6c0 4.5 6 11 6 11s6-6.5 6-11a6 6 0 0 0-6-6z" fill="none" stroke="#111" stroke-width="1.8"/><circle cx="8" cy="7" r="2"/></svg> Current</span></p>${legend}<hr>${grid()}<div class="bn" style="justify-content:center"><button class="btn alt" data-a="rev">Go to Review Page</button></div></div></div>`:"";
 function home(){
-  $("#app").innerHTML=`<div class="bh"><span class="lg2">✦ Greenbook</span><span class="zr"><button data-a="zm">A−</button><b>${Math.round(UZ*100)}%</b><button data-a="zp">A+</button></span><span>${NAME}<i class="av"></i></span></div><main class="rs"><h1>Practice and Prepare</h1><p>Pick a test, set your own timer, and start.</p><div class="row"><button class="btn" data-a="lib">Question Library</button><button class="btn alt" data-a="sol">Solved Questions</button><button class="btn alt" data-a="build">Build a full-length test</button></div>${all().map((T,i)=>`<article class="cd"><h2>${esc(T.name)}</h2><p>${T.q.length} questions${T.mods?" · "+T.mods.length+" modules (full-length)":""}</p><div class="row"><label>Minutes <input type="number" id="mn${i}" min="1" max="300" step="1" value="${T.mins}"></label><label><input type="checkbox" id="un${i}"> No timer</label><button class="btn" data-a="start" data-k="${i}">Start</button>${T.b?"":`<button class="btn alt" data-a="del" data-k="${i-BUILT.length}">Delete</button>`}</div></article>`).join("")}
-<details><summary>Add a new test</summary><p>Paste the JSON that Claude gives you for your new questions.</p><textarea id="imp" placeholder='{"name":"My test","mins":20,"questions":[{"t":"Grammar","p":"Sentence with ___ blank.","c":["A","B","C","D"],"a":0,"e":"Why A is right"}]}'></textarea><div class="row"><button class="btn" data-a="imp">Add test</button><span id="impm">${esc(msg)}</span></div></details>
-<h2>Past results</h2>${hist.length?hist.slice(0,20).map((h,i)=>`<p>${h.q?`<button class="lk" data-a="open" data-k="${i}">View analysis</button> `:''}${new Date(h.d).toLocaleDateString()} · ${esc(h.n)} · <b>${h.s}/${h.N}</b> (${h.p}%)</p>`).join("")+'<button class="btn alt" data-a="clr">Clear history</button>':"<p>No tests finished yet.</p>"}</main>`;
-}
+ const A=act(),X=stats(),h=new Date().getHours(),wk=X.skl.find(k=>k[1][0]<k[1][1]),pct=GOAL?Math.min(100,Math.round(X.today/GOAL*100)):0,Q=qod(),sq=Q&&SOL[Q.id];
+ const QS=[['rw','Reading & Writing','10 questions, fresh ones first'],['m','Math','10 questions, fresh ones first'],['miss','Review missed','Retry what you got wrong'],['weak','Weakest skill',wk?esc(wk[0]):'Solve more to find it']];
+ const rec=X.E.slice().sort((p,q)=>q.s.d-p.s.d).slice(0,5),lt=hist[0];
+ $("#app").innerHTML=topbar()+`<main class="rs wide"><h1>${h<12?'Good morning':h<18?'Good afternoon':'Good evening'}</h1><p>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p>
+<div class="sg"><div class="st"><b>${X.E.length}</b><span>Questions solved</span></div><div class="st"><b>${X.E.length?Math.round(X.C/X.E.length*100)+'%':'–'}</b><span>Accuracy</span></div><div class="st"><b>${X.st}</b><span>Day streak</span></div><div class="st"><b>${hist.length}</b><span>Tests finished</span></div></div>
+<div class="hg"><div class="cd"><h2>Today’s goal</h2><p><b>${X.today}</b> of ${GOAL} questions${X.today>=GOAL?' · Goal reached 🎉':''}</p><div style="padding:0 1.5rem"><div class="tr"><i style="width:${pct}%"></i></div></div><div class="row"><span>Daily goal</span><button class="btn alt sm" data-a="gl" data-k="-5" aria-label="Lower goal">−5</button><button class="btn alt sm" data-a="gl" data-k="5" aria-label="Raise goal">+5</button></div></div>
+<div class="cd"><h2>Question of the day</h2>${Q?`<p><b>${esc(Q.k)}</b><br><small class="hint">${TS[Q.s]} · ${esc(Q.d)} · ${DFN[Q.f]}${sq?' · '+(sq.r?'solved ✓':'tried ✗'):''}</small></p><div class="row"><button class="btn sm" data-a="hq" data-q="qod">${sq?'Try again':'Solve it'}</button></div>`:'<p>Question data not found. Keep the <b>data</b> folder next to index.html.</p>'}</div></div>
+<h2>Quick practice</h2><div class="sg">${QS.map(([q,t,d])=>`<button class="qs" data-a="hq" data-q="${q}"${qpool(q).length?'':' disabled'}><b>${t}</b><span>${d}</span></button>`).join('')}</div>
+<div class="hg"><div class="cd"><h2>Skills to work on</h2>${wk?`<div style="padding:0 1.5rem 1.125rem">${X.skl.filter(k=>k[1][0]<k[1][1]).slice(0,4).map(([t,[r,m]])=>`<div class="br wk"><span title="${esc(t)}">${esc(t)}</span><div class="tr"><i style="width:${r/m*100}%"></i></div><b>${r}/${m}</b></div>`).join('')}</div>`:`<p>${X.E.length?'No weak spots so far. Nice work.':'Solve a few questions and your weak spots will show up here.'}</p>`}<div class="row"><button class="btn alt sm" data-a="an">Open Analyze</button></div></div>
+<div class="cd"><h2>Recent activity</h2>${rec.length?`<div style="padding:0 1.5rem 1.125rem">${rec.map(x=>`<p style="padding:0;margin:.4rem 0"><span class="${x.s.r?'good':'warn'}"><b>${x.s.r?'✓':'✗'}</b></span> ${esc(x.it.k)} <small class="hint">· ${TS[x.it.s]} · ${new Date(x.s.d).toLocaleDateString()}</small></p>`).join('')}</div>`:'<p>Nothing yet. Start with a quick practice above.</p>'}${lt?`<p><small class="hint">Last test: ${esc(lt.n)} · ${lt.s}/${lt.N} (${lt.p}%)</small></p>`:''}</div></div></main>`}
+function mtV(){
+ $("#app").innerHTML=topbar()+`<main class="rs"><h1>My Tests</h1><p>Pick a test, set your own timer, and start.</p><div class="row"><button class="btn alt" data-a="build">Build a full-length test</button></div>${all().map((T,i)=>`<article class="cd"><h2>${esc(T.name)}</h2><p>${T.q.length} questions${T.mods?" · "+T.mods.length+" modules (full-length)":""}</p><div class="row"><label>Minutes <input type="number" id="mn${i}" min="1" max="300" step="1" value="${T.mins}"></label><label><input type="checkbox" id="un${i}"> No timer</label><button class="btn" data-a="start" data-k="${i}">Start</button>${T.b?"":`<button class="btn alt" data-a="del" data-k="${i-BUILT.length}">Delete</button>`}</div></article>`).join("")}
+<details><summary>Add a new test</summary><p>Paste the JSON that Claude gives you for your new questions.</p><textarea id="imp" placeholder='{"name":"My test","mins":20,"questions":[{"t":"Grammar","p":"Sentence with ___ blank.","c":["A","B","C","D"],"a":0,"e":"Why A is right"}]}'></textarea><div class="row"><button class="btn" data-a="imp">Add test</button><span id="impm">${esc(msg)}</span></div></details></main>`;$('#app').insertAdjacentHTML('beforeend',extras())}
+function anV(){
+ const X=stats();
+ $("#app").innerHTML=topbar()+`<main class="rs wide"><h1>Analyze</h1><div class="sg"><div class="st"><b>${X.E.length}</b><span>Questions solved</span></div><div class="st"><b>${X.E.length?Math.round(X.C/X.E.length*100)+'%':'–'}</b><span>Accuracy</span></div><div class="st"><b>${X.st}</b><span>Day streak</span></div><div class="st"><b>${X.E.length?fmt(Math.round(X.E.reduce((a,x)=>a+x.s.t,0)/X.E.length)):'–'}</b><span>Avg time per question</span></div></div>
+<div class="row"><button class="btn alt sm" data-a="sol">Open solved questions</button></div>
+<h2>By skill</h2>${X.skl.length?`<div class="cd" style="padding:1rem 1.5rem">${X.skl.map(([t,[r,m]])=>`<div class="br wk"><span title="${esc(t)}">${esc(t)}</span><div class="tr"><i style="width:${r/m*100}%"></i></div><b>${r}/${m}</b></div>`).join('')}</div>`:'<p>Solve questions in the Library to see your skills here.</p>'}
+<h2>Past test results</h2>${hist.length?hist.slice(0,20).map((h,i)=>`<p>${h.q?`<button class="lk" data-a="open" data-k="${i}">View analysis</button> `:''}${new Date(h.d).toLocaleDateString()} · ${esc(h.n)} · <b>${h.s}/${h.N}</b> (${h.p}%)</p>`).join("")+'<button class="btn alt" data-a="clr">Clear history</button>':"<p>No tests finished yet.</p>"}</main>`;$('#app').insertAdjacentHTML('beforeend',extras())}
 function results(){
   const q=S.q,n=q.length,ok=q.map((x,k)=>okq(x,S.a[k])),sc=ok.filter(Boolean).length,p=Math.round(sc/n*100);
   const tp={};q.forEach((x,k)=>{const t=x.t||"General";tp[t]=tp[t]||[0,0];tp[t][1]++;if(ok[k])tp[t][0]++});
@@ -485,13 +520,13 @@ document.addEventListener('input',e=>{const t=e.target;if(t.id==='gi'){const v=t
 document.addEventListener("click",e=>{
   const t=e.target.closest("[data-a]");
   if(!t||(t.classList.contains("ov")&&e.target!==t))return;
-  const a=t.dataset.a,k=+t.dataset.k,s=S,n=s.q?s.q.length:0;if(a!=="more"&&a!=="zm"&&a!=="zp")s.mo=0;if(a!=="dirs")s.dr=0;
+  const a=t.dataset.a,k=+t.dataset.k,s=S,n=s.q?s.q.length:0;if(a!=="more"&&a!=="zm"&&a!=="zp")s.mo=0;if(a!=="dirs")s.dr=0;if(a!=="set"&&a!=="zm"&&a!=="zp"&&a!=="zr")SETO=0;
   if(a==="start"){const T=all()[k];if(T.mods)startFull(T,$("#un"+k).checked);else start(T,$("#un"+k).checked,parseFloat($("#mn"+k).value))}
   else if(a==="imp")importTest();
   else if(a==="del")cf={t:'Delete this test?',y:'del',k};
   else if(a==="clr")cf={t:'Clear all past results?',y:'clr'};
   else if(a==="exit")cf={t:'Leave this test? Your answers will be lost.',y:'exit'};
-  else if(a==="no")cf=0;
+  else if(a==="no")cf=0;else if(a==="set")SETO^=1;else if(a==="zr"){UZ=.9;SV("bb_z",UZ);setZ()}else if(a==="mt"||a==="an"){clearInterval(timer);S={v:a}}else if(a==="nback"){const p=HS.pop();if(p){GOBACK=1;S={v:p}}}else if(a==="gl"){GOAL=Math.min(100,Math.max(5,GOAL+k));SV("gb_goal",GOAL)}else if(a==="hq"){const l=quick(t.dataset.q);if(l.length)openQ(l,0)}
   else if(a==="yes"){const y=cf.y;if(y==='del'){custom.splice(cf.k,1);SV('bb_tests',custom)}else if(y==='clr'){hist=[];SV('bb_hist',hist)}else{clearInterval(timer);S={v:'home'};msg=''}cf=0}
   else if(a==="home"){clearInterval(timer);S={v:'home'};msg=''}
   else if(a==="open"){const h=hist[k];S={v:'r',T:{name:h.n,math:h.mt},q:h.q,a:h.a,tt:h.tt,f:'a',re:1,u:1}}
@@ -533,7 +568,8 @@ const para=s=>String(s||'').split(/\n\n/).map(p=>`<p>${esc(p)}</p>`).join('');
 const uniq=a=>[...new Set(a)].sort();
 function filt(){const q=LB.q.trim().toLowerCase();return ALLQ().filter(x=>(!LB.test||x.s===LB.test)&&(!LB.dom||x.d===LB.dom)&&(!LB.sk||x.k===LB.sk)&&(!LB.df||x.f===LB.df)&&(!LB.st||String(x.v)===LB.st)&&(!q||x.id.toLowerCase().includes(q))&&(!LB.res||(LB.res==='u'?!SOL[x.id]:LB.res==='c'?SOL[x.id]&&SOL[x.id].r:SOL[x.id]&&!SOL[x.id].r)))}
 const sel=(f,lab,opts,cur)=>`<label class="fl">${lab}<select data-f="${f}"><option value="">All</option>${opts.map(o=>{const[v,t]=[].concat(o,o);return`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(t)}</option>`}).join('')}</select></label>`;
-const topbar=()=>`<div class="bh"><span class="lg2">✦ Greenbook</span><span class="zr"><button data-a="zm">A−</button><b>${Math.round(UZ*100)}%</b><button data-a="zp">A+</button></span><span><button class="lk" data-a="home">Home</button><button class="lk" data-a="lib">Library</button><button class="lk" data-a="sol">Solved</button></span></div>`;
+const NAVI=[['home','Home'],['lib','Library'],['mt','My Tests'],['an','Analyze']],TOPV={home:1,mt:1,lib:1,sol:1,an:1,bld:1};
+const topbar=()=>{const cur=({home:'home',lib:'lib',bld:'lib',mt:'mt',sol:'an',an:'an'})[S.v];return `<div class="bh"><div class="bl"><button class="bk" data-a="nback" aria-label="Go back"${HS.length?'':' disabled'}>←</button><span class="lg2">✦ Greenbook</span></div><nav class="bnv" aria-label="Main">${NAVI.map(([a,t])=>`<button data-a="${a}"${a===cur?' class="on" aria-current="page"':''}>${t}</button>`).join('')}</nav><div class="br2"><button class="gear" data-a="set" aria-label="Settings" aria-expanded="${!!SETO}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>${SETO?`<div class="stm" role="dialog" aria-label="Settings"><h3>Settings</h3><div class="srow"><span>Interface size</span><span class="zr"><button data-a="zm" aria-label="Smaller">A−</button><b>${Math.round(UZ*100)}%</b><button data-a="zp" aria-label="Larger">A+</button></span></div><button class="lk" data-a="zr">Reset size</button></div>`:''}</div></div>`};
 function libV(){
  const A=ALLQ(),sub=A.filter(x=>!LB.test||x.s===LB.test),doms=uniq(sub.map(x=>x.d)),sks=uniq(sub.filter(x=>!LB.dom||x.d===LB.dom).map(x=>x.k));
  const L=LB.list=filt(),np=Math.max(1,Math.ceil(L.length/PG));LB.pg=Math.min(LB.pg,np-1);const pg=L.slice(LB.pg*PG,LB.pg*PG+PG);
@@ -603,8 +639,8 @@ function fullTest(){const eng=x=>x.s==='m'?{t:x.k,p:x.data.p,..._(x),e:x.data.e,
  add(r1,0,'Section 1, Module 1: Reading and Writing',0,32,'Reading and Writing: Module 1');add(r2,0,'Section 1, Module 2: Reading and Writing',0,32,'Reading and Writing: Module 2');add(m1,0,'Section 2, Module 1: Math',1,35,'Math: Module 1');add(m2,0,'Section 2, Module 2: Math',1,35,'Math: Module 2');
  custom.push({name:BG.name.trim()||'My full-length test',mins:mods.reduce((a,m)=>a+m.mins,0),q:mods.flatMap(m=>m.q),mods,full:1,math:0});SV('bb_tests',custom);msg='Full-length test added.'}
 const _r0=render;
-render=function(){if(S.v!=='lq'){clearInterval(PT);P=null}
- if(S.v==='lib')libV();else if(S.v==='lq'&&P)lqV();else if(S.v==='sol')solV();else if(S.v==='bld')bldV();else _r0()};
+render=function(){trk();if(S.v!=='lq'){clearInterval(PT);P=null}
+ if(S.v==='mt')mtV();else if(S.v==='an')anV();else if(S.v==='lib')libV();else if(S.v==='lq'&&P)lqV();else if(S.v==='sol')solV();else if(S.v==='bld')bldV();else _r0()};
 document.addEventListener('change',e=>{const t=e.target,f=t.dataset&&t.dataset.f;if(!f)return;LB[f]=t.value;if(f==='test')LB.dom=LB.sk='';if(f==='dom')LB.sk='';LB.pg=0;render()});
 document.addEventListener('input',e=>{const t=e.target;if(t.id==='gsp'&&P)P.sel=t.value;else if(t.id==='gjs')BG.j=t.value;else if(t.id==='gtn')BG.name=t.value});
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t||t.disabled)return;const a=t.dataset.a,k=+t.dataset.k;let go=1;
@@ -629,6 +665,23 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else go=0;
  if(go)render()});
 
+/* ===== Navigation, settings, home helpers ===== */
+let SETO=0,HS=[],LV=null,GOBACK=0,GOAL=ST('gb_goal')||10;
+function trk(){const v=S.v;if(!TOPV[v])return;if(GOBACK){GOBACK=0;LV=v;return}if(LV&&LV!==v){HS.push(LV);if(HS.length>30)HS.shift()}LV=v}
+const act=()=>ALLQ().filter(x=>x.v),shf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+function stats(){const E=Object.entries(SOL).map(([id,s])=>({it:byId(id),s})).filter(x=>x.it),C=E.filter(x=>x.s.r).length;
+ const day=t=>{const x=new Date(t);x.setHours(0,0,0,0);return x.getTime()},prev=t=>{const x=new Date(t);x.setDate(x.getDate()-1);return x.getTime()};
+ const ds=new Set(E.map(x=>day(x.s.d))),t0=day(Date.now());let st=0,c=ds.has(t0)?t0:prev(t0);while(ds.has(c)){st++;c=prev(c)}
+ const sk={};E.forEach(x=>{const a=sk[x.it.k]=sk[x.it.k]||[0,0];a[1]++;if(x.s.r)a[0]++});
+ return{E,C,st,today:E.filter(x=>day(x.s.d)===t0).length,skl:Object.entries(sk).sort((a,b)=>a[1][0]/a[1][1]-b[1][0]/b[1][1]||b[1][1]-a[1][1])}}
+function qod(){const A=act();return A.length?A[Math.floor(Date.now()/864e5)%A.length]:null}
+function qpool(q){const A=act(),X=stats();
+ if(q==='qod'){const x=qod();return x?[x]:[]}
+ if(q==='miss')return X.E.filter(x=>!x.s.r).map(x=>x.it);
+ if(q==='weak'){const w=X.skl.find(k=>k[1][0]<k[1][1]);return w?A.filter(x=>x.k===w[0]):[]}
+ const u=A.filter(x=>x.s===q&&!SOL[x.id]);return u.length?u:A.filter(x=>x.s===q)}
+const quick=q=>q==='qod'?qpool(q):shf(qpool(q)).slice(0,10);
+document.addEventListener('click',e=>{if(SETO&&!e.target.closest('.br2')){SETO=0;render()}});
 setZ();
 render();
 </script>
